@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>탐조 기록장</title>
+<style>
+:root{--bg:#EEF1EA;--sf:#FFFFFF;--ink:#16231C;--mu:#58675E;--ln:#CFD7CC;--ac:#0E6B5C;--onac:#FFFFFF;--ac2:#DCEBE4;--wn:#963711;--wnbg:#FBEAE0;--hd:#EEF1EA;--sc:rgba(10,20,15,.45);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1713;--sf:#18231D;--ink:#E7EEE8;--mu:#9CAEA3;--ln:#2D3D34;--ac:#5CC8B0;--onac:#06231C;--ac2:#1E3A31;--wn:#F2A27C;--wnbg:#3A2218;--hd:#0F1713;--sc:rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1713;--sf:#18231D;--ink:#E7EEE8;--mu:#9CAEA3;--ln:#2D3D34;--ac:#5CC8B0;--onac:#06231C;--ac2:#1E3A31;--wn:#F2A27C;--wnbg:#3A2218;--hd:#0F1713;--sc:rgba(0,0,0,.6);color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hd);z-index:10}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--hd);border-bottom:1px solid var(--ln);padding:10px 16px}
+header .t{font-size:20px;font-weight:700;line-height:1.3}
+header .c{font-size:14px;color:var(--mu);margin-top:2px}
+main{max-width:640px;margin:0 auto;padding:12px 16px 120px}
+h2{font-size:16px;font-weight:700;margin:22px 0 8px}
+.mu{color:var(--mu);font-size:14px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:14px;margin:0 0 12px}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:baseline}
+.lab{font-size:14px;font-weight:700;margin:14px 0 6px;color:var(--mu)}
+.lab:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:48px;padding:8px 14px;border:1px solid var(--ln);background:var(--sf);border-radius:10px;cursor:pointer;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ac);border-color:var(--ac);color:var(--onac);font-weight:700}
+.chip.sm{min-height:44px;padding:6px 12px}
+.btn{min-height:52px;padding:10px 18px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--onac)}
+.btn.dng{color:var(--wn);border-color:var(--wn)}
+.btn.half{width:auto;flex:1}
+.btns{display:flex;gap:10px}
+input[type=text],input[type=search],input[type=number],input[type=date],input[type=time],textarea,select{width:100%;min-height:48px;padding:8px 12px;border:1px solid var(--ln);border-radius:10px;background:var(--sf)}
+textarea{min-height:110px;font-size:14px}
+.inl{display:flex;gap:8px;align-items:center}
+.inl>*{flex:1;min-width:0}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sp{display:flex;flex-direction:column;align-items:flex-start;gap:0;text-align:left;min-height:62px;padding:8px 12px;border:1px solid var(--ln);background:var(--sf);border-radius:10px;cursor:pointer;position:relative}
+.sp .n{font-weight:700;font-size:17px}
+.sp .s{font-size:12px;color:var(--mu);min-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.sp .b{position:absolute;top:8px;right:10px;background:var(--ac);color:var(--onac);border-radius:999px;font-size:13px;font-weight:700;padding:0 8px;line-height:22px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;min-height:54px;padding:8px 14px;border:1px solid var(--ln);background:var(--sf);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.li .a{font-weight:700}
+.li .z{font-size:14px;color:var(--mu);text-align:right}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--ac2);color:var(--ink);margin-left:6px}
+.tag.w{background:var(--wnbg);color:var(--wn)}
+.warn{background:var(--wnbg);color:var(--wn);border-radius:10px;padding:10px 12px;font-size:14px;margin:8px 0}
+.warn ul{margin:6px 0 0;padding-left:18px}
+.ok{background:var(--ac2);border-radius:10px;padding:10px 12px;font-size:14px;margin:8px 0}
+pre{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:10px;font-size:12px;overflow-x:auto;max-height:200px;margin:8px 0}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--hd);border-top:1px solid var(--ln);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;min-height:52px;border:0;background:none;font-weight:500;font-size:14px;color:var(--mu);border-radius:10px;cursor:pointer;position:relative}
+nav button[aria-current="page"]{color:var(--ink);font-weight:700;background:var(--ac2)}
+.scrim{position:fixed;inset:0;background:var(--sc);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet h3{margin:0;font-size:20px}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:12px 14px;border-radius:12px;font-weight:700;text-align:center;max-width:608px;margin:0 auto}
+.sw{display:inline-block;width:40px;height:40px;border-radius:50%;border:2px solid var(--ln);vertical-align:middle}
+.sw.sm{width:16px;height:16px;border-width:1px;margin-right:4px}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 4px}
+.pbtn{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:84px;padding:8px 2px;border:2px solid var(--ln);background:var(--sf);border-radius:12px;font-size:13px;cursor:pointer}
+.pbtn[aria-pressed="true"]{border-color:var(--ac);background:var(--ac2);font-weight:700}
+.pbtn[aria-pressed="true"] .sw{border-color:var(--ac)}
+.split{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:start}
+.pt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:52px;padding:6px 10px;margin-bottom:6px;border:2px solid var(--ln);background:var(--sf);border-radius:10px;cursor:pointer;text-align:left}
+.pt[aria-pressed="true"]{border-color:var(--ac);background:var(--ac2);font-weight:700}
+.pt .dots{display:block;min-height:16px;line-height:1}
+.pgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.pbtn.sm{min-height:66px;font-size:12px;padding:6px 2px}
+.pbtn.sm .sw{width:30px;height:30px}
+html,body{height:100%}
+body{display:flex;flex-direction:column;overflow:hidden}
+#app{flex:1;min-height:0;display:flex;flex-direction:column}
+header{position:static;flex:0 0 auto}
+main{flex:1 1 auto;min-height:0;overflow-y:auto;width:100%;max-width:640px;margin:0 auto;padding:12px 16px 16px;-webkit-overflow-scrolling:touch}
+nav{position:static;flex:0 0 auto}
+.srch{position:sticky;top:-12px;z-index:2;background:var(--bg);padding:12px 0 6px;margin-top:-12px}
+.sheet{height:88vh;max-height:88vh}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sheet"></div>
+<div id="toast"></div>
+<script>
+(function(){
+'use strict';
+var KEY='birdlog.v1';
+var DEF={
+ habitat:['산림','습지','하천','해안·갯벌','농경지','저수지·호수','도심·공원','기타'],
+ weather:['맑음','구름 조금','흐림','비','눈','안개','강풍'],
+ comp:['혼자','가족','친구','모임'],
+ behavior:['휴식','먹이 활동','이동','비행','울음','번식 행동','목욕·털손질','기타'],
+ size:['참새만 함','직박구리만 함','비둘기만 함','까치만 함','오리류','기타'],
+ color:['흰색','검정','회색','갈색','황갈·주황','붉은색','노랑','녹색','청색'],
+ beak:['짧고 굵음','가늘고 뾰족','길고 곧음','길고 휘어짐','납작하고 넓음','갈고리형'],
+ leg:['검정','갈색','분홍','노랑','주황·붉은색','회색·청회색'],
+ pattern:['없음','세로줄','가로줄','점무늬','눈썹선','눈테','날개띠'],
+ tail:['갈라짐(깊음)','갈라짐(얕음)','둥근형','쐐기형(가운데 길음)','긴 꼬리','짧은 꼬리'],
+ sound:['못 들음','짧게 반복','길게 지저귐','휘파람','쉰 소리','낮은 울음'],
+ cond:['거리 멂','역광','매우 빠름','가려짐','짧은 시간','빛 부족'],
+ wind:['없음','약함','보통','강함'],
+ gear:['쌍안경','망원경','카메라','녹음기','삼각대'],
+ disturb:['사람 많음','소음','개 산책','공사','낚시','드론','차량','기타'],
+ water:['해당 없음','만조','간조','밀물','썰물','수위 높음','수위 보통','수위 낮음','결빙'],
+ purpose:['일반 탐조','철새 조사','번식 확인','사진 촬영','특정 종 찾기'],
+ transport:['도보','차량','자전거']
+};
+var LBL={habitat:'서식지',weather:'날씨',comp:'동행',behavior:'행동',size:'크기 비교',color:'색',beak:'부리',leg:'다리 색',pattern:'무늬',tail:'꼬리 모양',sound:'소리',cond:'관찰 조건',wind:'바람',gear:'장비',disturb:'방해 요인',water:'물 상태',purpose:'탐조 목적',transport:'이동 수단'};
+var FG=[['size','크기 비교','size'],['beak','부리 모양','beak'],['tail','꼬리 모양','tail'],['sound','소리','sound'],['cond','관찰 조건','cond']];
+var PARTS=[['head','머리'],['beakc','부리'],['back','등'],['belly','배'],['wing','날개'],['rump','허리'],['tailc','꼬리'],['leg','다리']];
+var PATS=[['p_crown','정수리선'],['p_eyebrow','눈썹선'],['p_eyestripe','눈선'],['p_eyering','눈테'],['p_malar','뺨선'],['p_throat','멱 무늬'],['p_streak','가슴 줄무늬'],['p_back','등 줄무늬'],['p_flank','옆구리 줄무늬'],['p_wingbar','날개띠'],['p_tailbar','꼬리 가로줄무늬'],['p_tailtip','꼬리 끝']];
+var ALLC=PARTS.concat(PATS);
+var isPat=function(k){return k.indexOf('p_')===0};
+var PSHAPE={p_eyebrow:['line','M50 52 C58 45 72 45 84 53'],p_eyestripe:['line','M48 62 C60 59 76 59 90 63'],p_eyering:['ring','cx="62" cy="58" r="8"'],p_malar:['line','M50 72 C60 80 74 82 86 78'],p_crown:['line','M64 40 C72 38 82 42 90 50'],p_throat:['fillell','cx="58" cy="79" rx="9" ry="6"'],p_streak:['line','M82 96 L85 110 M92 98 L95 114 M102 98 L105 114 M112 98 L114 112 M122 96 L123 108'],p_wingbar:['line','M132 76 C135 90 139 100 143 107 M156 79 C159 91 163 101 167 109'],p_back:['line','M100 54 L104 68 M118 53 L123 70 M136 57 L142 74 M154 64 L159 80'],p_flank:['line','M112 112 L117 124 M128 114 L133 126 M144 114 L149 123'],p_tailbar:['line','M222 96 L222 114 M238 94 L238 118 M254 92 L254 122'],p_tailtip:['fillpath','M262 88 L276 86 L284 106 L270 128 L258 124 Z']};
+var PAL=[['흰색','#FFFFFF'],['검정','#1F1F1F'],['회색','#8A8F94'],['청회색','#5C7385'],['갈색','#7A4A2B'],['연갈색','#B58B5E'],['황갈색','#C98A3C'],['주황색','#E8761E'],['붉은색','#C62828'],['분홍색','#E58BA5'],['노란색','#F2CE2B'],['올리브색','#7D7A33'],['녹색','#4C9A3E'],['청록색','#1C7C73'],['청색','#2F6DB5'],['하늘색','#8EC5E8'],['자주색','#7B3F7F']];
+var palHex=function(n){var q=PAL.find(function(x){return x[0]===n});return q?q[1]:'#9AA0A6'};
+var swDots=function(c){return '<span aria-hidden="true">'+(c||[]).map(function(n){return '<span class="sw sm" style="background:'+palHex(n)+'"></span>'}).join('')+'</span>'};
+function birdSvg(d,big){var ia=!!big;
+ var defs='',paint={};
+ PARTS.forEach(function(q){var k=q[0],c=d[k]||[];
+  if(c.length>1){var st='';c.forEach(function(n,i){var a=Math.round(i*100/c.length),b=Math.round((i+1)*100/c.length);st+='<stop offset="'+a+'%" stop-color="'+palHex(n)+'"/><stop offset="'+b+'%" stop-color="'+palHex(n)+'"/>'});defs+='<linearGradient id="g'+k+'" x1="0" y1="0" x2="1" y2="1">'+st+'</linearGradient>';paint[k]='url(#g'+k+')'}
+  else paint[k]=c.length?palHex(c[0]):''});
+ function sh(k,tag,attrs){var on=ui.sheet&&ui.sheet.pal===k,f=paint[k];
+  return '<'+tag+' '+attrs+' fill="'+(f||'none')+'" stroke="'+(on?'var(--ac)':(f?'rgba(0,0,0,.4)':'var(--mu)'))+'" stroke-width="'+(on?3.5:1.5)+'"'+(f?'':' stroke-dasharray="3 3" stroke-opacity=".7"')+(ia?' data-act="part" data-v="'+k+'" style="cursor:pointer"':'')+'/>'}
+ var leg=paint.leg,lon=ui.sheet&&ui.sheet.pal==='leg';
+ var legD='M122 138 L124 172 M110 174 L140 174';
+ var pat='';
+ PATS.forEach(function(q){var c=(d[q[0]]||[])[0];if(!c)return;var col=palHex(c),sp=PSHAPE[q[0]],t=sp[0],g=sp[1];
+  if(t==='line'||t==='band'){var w=t==='band'?7:3.5;pat+='<path d="'+g+'" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="'+(w+2)+'" stroke-linecap="round"/><path d="'+g+'" fill="none" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round"/>'}
+  else if(t==='ring')pat+='<circle '+g+' fill="none" stroke="rgba(0,0,0,.3)" stroke-width="5"/><circle '+g+' fill="none" stroke="'+col+'" stroke-width="3"/>';
+  else if(t==='fillell')pat+='<ellipse '+g+' fill="'+col+'" stroke="rgba(0,0,0,.4)" stroke-width="1"/>';
+  else pat+='<path d="'+g+'" fill="'+col+'" stroke="rgba(0,0,0,.4)" stroke-width="1"/>'});
+ return '<svg viewBox="0 0 300 190" width="100%" style="'+(ia?'max-height:55vh':'max-height:120px')+';display:block;margin:0 auto" role="img" aria-label="새 그림. 부위를 누르면 색을 고릅니다"><defs>'+defs+'</defs>'+
+  sh('tailc','path','d="M198 96 L276 86 L284 106 L270 128 L206 112 Z"')+
+  sh('belly','path','d="M62 84 C66 130 120 148 182 122 C194 116 200 106 200 100 C150 98 100 92 62 84 Z"')+
+  sh('back','path','d="M84 46 C120 44 170 56 202 90 L198 100 C150 88 110 84 80 80 Z"')+
+  sh('rump','path','d="M188 80 C198 84 206 92 206 100 L194 102 C192 94 190 86 188 80 Z"')+
+  sh('wing','path','d="M96 78 C130 70 176 82 224 112 C180 118 130 106 96 92 Z"')+
+  sh('head','circle','cx="70" cy="64" r="26"')+pat+
+  sh('beakc','path','d="M46 60 L18 68 L46 76 Z"')+'<circle cx="62" cy="58" r="3.5" fill="#111"/>'+
+  '<path d="'+legD+'" fill="none" stroke="'+(leg||'var(--mu)')+'" stroke-width="6" stroke-linecap="round"'+(leg?'':' stroke-dasharray="4 5"')+'/>'+
+  '<path d="'+legD+'" fill="none" stroke="'+(lon?'var(--ac)':'transparent')+'" stroke-width="'+(lon?10:18)+'" stroke-linecap="round" stroke-opacity="'+(lon?.35:1)+'" '+(ia?'data-act="part" data-v="leg" style="cursor:pointer"':'')+'/></svg>'}
+var COUNTS=[1,2,3,4,5,6,7,8,9,10,12,15,20,25,30,40,50,70,100,150,200,300];
+var PROTO=[['Traveling','이동 관찰'],['Stationary','정점 관찰'],['Incidental','우연히 본 것']];
+var KMS=[0.5,1,1.5,2,3,4,5,7,10];
+var CERT=['확실','추정','미확인'];
+var SEED_PLACES=['기지제','전주월드컵경기장','전주천 서신동','전주수목원','고산천','만경강','동진강','섬진강'];
+var BASE=[["흑기러기","Branta bernicla","Brant","brant","오리","기러기"],["붉은가슴기러기","Branta ruficollis","Red-breasted Goose","rebgoo1","오리","기러기"],["흰얼굴기러기","Branta leucopsis","Barnacle Goose","bargoo","오리","기러기"],["캐나다기러기","Branta hutchinsii","Cackling Goose","cacgoo1","오리","기러기"],["줄기러기","Anser indicus","Bar-headed Goose","bahgoo","오리","기러기"],["흰머리기러기","Anser canagicus","Emperor Goose","empgoo","오리","기러기"],["흰기러기","Anser caerulescens","Snow Goose","snogoo","오리","기러기"],["회색기러기","Anser anser","Graylag Goose","gragoo","오리","기러기"],["개리","Anser cygnoides","Swan Goose","swagoo1","오리","기러기"],["큰부리큰기러기","Anser fabalis","Taiga Bean-Goose","taibeg1","오리","기러기"],["큰기러기","Anser serrirostris","Tundra Bean-Goose","tunbeg1","오리","기러기"],["쇠기러기","Anser albifrons","Greater White-fronted Goose","gwfgoo","오리","기러기"],["흰이마기러기","Anser erythropus","Lesser White-fronted Goose","lwfgoo","오리","기러기"],["혹고니","Cygnus olor","Mute Swan","mutswa","오리","기러기"],["고니","Cygnus columbianus","Tundra Swan","tunswa","오리","기러기"],["큰고니","Cygnus cygnus","Whooper Swan","whoswa","오리","기러기"],["혹부리오리","Tadorna tadorna","Common Shelduck","comshe","오리","기러기"],["황오리","Tadorna ferruginea","Ruddy Shelduck","rudshe","오리","기러기"],["원앙사촌","Tadorna cristata","Crested Shelduck","creshe1","오리","기러기"],["원앙","Aix galericulata","Mandarin Duck","manduc","오리","기러기"],["흰얼굴아기오리","Nettapus coromandelianus","Cotton Pygmy-Goose","copgoo1","오리","기러기"],["가창오리","Sibirionetta formosa","Baikal Teal","baitea","오리","기러기"],["발구지","Spatula querquedula","Garganey","gargan","오리","기러기"],["넓적부리","Spatula clypeata","Northern Shoveler","norsho","오리","기러기"],["알락오리","Mareca strepera","Gadwall","gadwal","오리","기러기"],["청머리오리","Mareca falcata","Falcated Duck","falduc","오리","기러기"],["홍머리오리","Mareca penelope","Eurasian Wigeon","eurwig","오리","기러기"],["아메리카홍머리오리","Mareca americana","American Wigeon","amewig","오리","기러기"],["흰뺨검둥오리","Anas zonorhyncha","Eastern Spot-billed Duck","spbduc","오리","기러기"],["청둥오리","Anas platyrhynchos","Mallard","mallar3","오리","기러기"],["미국오리","Anas rubripes","American Black Duck","ambduc","오리","기러기"],["고방오리","Anas acuta","Northern Pintail","norpin","오리","기러기"],["쇠오리","Anas crecca","Green-winged Teal","gnwtea","오리","기러기"],["미국쇠오리","Anas carolinensis","Green-winged Teal (American)","agwtea1","오리","기러기"],["붉은부리흰죽지","Netta rufina","Red-crested Pochard","recpoc","오리","기러기"],["큰흰죽지","Aythya valisineria","Canvasback","canvas","오리","기러기"],["흰죽지","Aythya ferina","Common Pochard","compoc","오리","기러기"],["붉은가슴흰죽지","Aythya baeri","Baer's Pochard","baepoc1","오리","기러기"],["적갈색흰죽지","Aythya nyroca","Ferruginous Duck","ferduc","오리","기러기"],["북미댕기흰죽지","Aythya collaris","Ring-necked Duck","rinduc","오리","기러기"],["댕기흰죽지","Aythya fuligula","Tufted Duck","tufduc","오리","기러기"],["검은머리흰죽지","Aythya marila","Greater Scaup","gresca","오리","기러기"],["쇠검은머리흰죽지","Aythya affinis","Lesser Scaup","lessca","오리","기러기"],["호사북방오리","Somateria spectabilis","King Eider","kineid","오리","기러기"],["흰줄박이오리","Histrionicus histrionicus","Harlequin Duck","harduc","오리","기러기"],["흰이마검둥오리","Melanitta perspicillata","Surf Scoter","sursco","오리","기러기"],["노랑부리검둥오리사촌","Melanitta fusca","Velvet Scoter","whwsco3","오리","기러기"],["검둥오리사촌","Melanitta stejnegeri","Stejneger's Scoter","whwsco1","오리","기러기"],["검둥오리","Melanitta americana","Black Scoter","blksco2","오리","기러기"],["바다꿩","Clangula hyemalis","Long-tailed Duck","lotduc","오리","기러기"],["꼬마오리","Bucephala albeola","Bufflehead","buffle","오리","기러기"],["흰뺨오리","Bucephala clangula","Common Goldeneye","comgol","오리","기러기"],["북방흰뺨오리","Bucephala islandica","Barrow's Goldeneye","bargol","오리","기러기"],["흰비오리","Mergellus albellus","Smew","smew","오리","기러기"],["비오리","Mergus merganser","Common Merganser","commer","오리","기러기"],["바다비오리","Mergus serrator","Red-breasted Merganser","rebmer","오리","기러기"],["호사비오리","Mergus squamatus","Scaly-sided Merganser","scsmer1","오리","기러기"],["들꿩","Tetrastes bonasia","Hazel Grouse","hazgro1","꿩","닭"],["멧닭","Lyrurus tetrix","Black Grouse","blagro1","꿩","닭"],["꿩","Phasianus colchicus","Ring-necked Pheasant","rinphe1","꿩","닭"],["메추라기","Coturnix japonica","Japanese Quail","japqua","꿩","닭"],["쏙독새","Caprimulgus jotaka","Gray Nightjar","grynig1","쏙독새","쏙독새"],["작은칼새","Aerodramus brevirostris","Himalayan Swiftlet","himswi2","칼새","칼새"],["바늘꼬리칼새","Hirundapus caudacutus","White-throated Needletail","whtnee","칼새","칼새"],["흰배칼새","Tachymarptis melba","Alpine Swift","alpswi1","칼새","칼새"],["검은등칼새","Apus apus","Common Swift","comswi","칼새","칼새"],["칼새","Apus pacificus","Pacific Swift","fotswi","칼새","칼새"],["쇠칼새","Apus nipalensis","House Swift","houswi1","칼새","칼새"],["느시","Otis tarda","Great Bustard","grebus1","느시","느시"],["작은뻐꾸기사촌","Centropus bengalensis","Lesser Coucal","lescou1","두견이","두견이"],["밤색날개뻐꾸기","Clamator coromandus","Chestnut-winged Cuckoo","chwcuc1","두견이","두견이"],["검은뻐꾸기","Eudynamys scolopaceus","Asian Koel","asikoe2","두견이","두견이"],["우는뻐꾸기","Cacomantis merulinus","Plaintive Cuckoo","placuc1","두견이","두견이"],["검은두견이","Surniculus lugubris","Square-tailed Drongo-Cuckoo","asidrc3","두견이","두견이"],["큰매사촌","Hierococcyx sparverioides","Large Hawk-Cuckoo","larhac2","두견이","두견이"],["매사촌","Hierococcyx hyperythrus","Northern Hawk-Cuckoo","nohcuc1","두견이","두견이"],["작은매사촌","Hierococcyx nisicolor","Hodgson's Hawk-Cuckoo","hodhac1","두견이","두견이"],["두견이","Cuculus poliocephalus","Lesser Cuckoo","lescuc1","두견이","두견이"],["검은등뻐꾸기","Cuculus micropterus","Indian Cuckoo","indcuc1","두견이","두견이"],["벙어리뻐꾸기","Cuculus optatus","Oriental Cuckoo","oricuc2","두견이","두견이"],["뻐꾸기","Cuculus canorus","Common Cuckoo","comcuc","두견이","두견이"],["사막꿩","Syrrhaptes paradoxus","Pallas's Sandgrouse","palsan1","사막꿩","사막꿩"],["낭비둘기","Columba rupestris","Hill Pigeon","hilpig1","비둘기","비둘기"],["분홍가슴비둘기","Columba oenas","Stock Dove","stodov1","비둘기","비둘기"],["흑비둘기","Columba janthina","Black Wood-Pigeon","jawpig1","비둘기","비둘기"],["멧비둘기","Streptopelia orientalis","Oriental Turtle-Dove","ortdov","비둘기","비둘기"],["염주비둘기","Streptopelia decaocto","Eurasian Collared-Dove","eucdov","비둘기","비둘기"],["홍비둘기","Streptopelia tranquebarica humilis","Red Collared-Dove","recdov1","비둘기","비둘기"],["목점박이비둘기","Spilopelia chinensis","Spotted Dove","spodov","비둘기","비둘기"],["녹색비둘기","Treron sieboldii","White-bellied Green-Pigeon","whbpig1","비둘기","비둘기"],["회색가슴뜸부기","Rallus aquaticus","Water Rail","watrai1","뜸부기","두루미"],["흰눈썹뜸부기","Rallus indicus","Brown-cheeked Rail","bncrai1","뜸부기","두루미"],["쇠물닭","Gallinula chloropus","Eurasian Moorhen","commoo3","뜸부기","두루미"],["물닭","Fulica atra","Eurasian Coot","eurcoo","뜸부기","두루미"],["알락뜸부기","Coturnicops exquisitus","Swinhoe's Rail","swirai1","뜸부기","두루미"],["쇠뜸부기사촌","Zapornia fusca","Ruddy-breasted Crake","rubcra1","뜸부기","두루미"],["한국뜸부기","Zapornia paykullii","Band-bellied Crake","babcra1","뜸부기","두루미"],["쇠뜸부기","Zapornia pusilla","Baillon's Crake","baicra1","뜸부기","두루미"],["뜸부기","Gallicrex cinerea","Watercock","waterc1","뜸부기","두루미"],["흰배뜸부기","Amaurornis phoenicurus","White-breasted Waterhen","whbwat1","뜸부기","두루미"],["시베리아흰두루미","Leucogeranus leucogeranus","Siberian Crane","sibcra1","두루미","두루미"],["캐나다두루미","Antigone canadensis","Sandhill Crane","sancra","두루미","두루미"],["재두루미","Antigone vipio","White-naped Crane","whncra1","두루미","두루미"],["쇠재두루미","Grus virgo","Demoiselle Crane","demcra1","두루미","두루미"],["두루미","Grus japonensis","Red-crowned Crane","reccra1","두루미","두루미"],["검은목두루미","Grus grus","Common Crane","comcra","두루미","두루미"],["흑두루미","Grus monacha","Hooded Crane","hoocra1","두루미","두루미"],["논병아리","Tachybaptus ruficollis","Little Grebe","litgre1","논병아리","논병아리"],["큰논병아리","Podiceps grisegena","Red-necked Grebe","rengre","논병아리","논병아리"],["뿔논병아리","Podiceps cristatus","Great Crested Grebe","grcgre1","논병아리","논병아리"],["귀뿔논병아리","Podiceps auritus","Horned Grebe","horgre","논병아리","논병아리"],["검은목논병아리","Podiceps nigricollis","Eared Grebe","eargre","논병아리","논병아리"],["큰홍학","Phoenicopterus roseus","Greater Flamingo","grefla3","홍학","홍학"],["세가락메추라기","Turnix tanki","Yellow-legged Buttonquail","yelbut1","세가락메추라기","도요"],["검은머리물떼새","Haematopus ostralegus","Eurasian Oystercatcher","euroys1","검은머리물떼새","도요"],["장다리물떼새","Himantopus himantopus","Black-winged Stilt","bkwsti","장다리물떼새","도요"],["뒷부리장다리물떼새","Recurvirostra avosetta","Pied Avocet","pieavo1","장다리물떼새","도요"],["개꿩","Pluvialis squatarola","Black-bellied Plover","bkbplo","물떼새","도요"],["검은가슴물떼새","Pluvialis fulva","Pacific Golden-Plover","pagplo","물떼새","도요"],["흰눈썹물떼새","Eudromias morinellus","Eurasian Dotterel","eurdot","물떼새","도요"],["흰죽지꼬마물떼새","Charadrius hiaticula","Common Ringed Plover","corplo","물떼새","도요"],["꼬마물떼새","Charadrius dubius","Little Ringed Plover","lirplo","물떼새","도요"],["흰목물떼새","Charadrius placidus","Long-billed Plover","lobplo1","물떼새","도요"],["댕기물떼새","Vanellus vanellus","Northern Lapwing","norlap","물떼새","도요"],["민댕기물떼새","Vanellus cinereus","Gray-headed Lapwing","gyhlap1","물떼새","도요"],["큰물떼새","Anarhynchus veredus","Oriental Plover","oriplo1","물떼새","도요"],["검은이마왕눈물떼새","Anarhynchus atrifrons","Tibetan Sand-Plover","lessap1","물떼새","도요"],["왕눈물떼새","Anarhynchus mongolus","Siberian Sand-Plover","lessap2","물떼새","도요"],["큰왕눈물떼새","Anarhynchus leschenaultii","Greater Sand-Plover","grsplo","물떼새","도요"],["흰물떼새","Anarhynchus alexandrinus","Kentish Plover","kenplo1","물떼새","도요"],["호사도요","Rostratula benghalensis","Greater Painted-Snipe","grpsni1","호사도요","도요"],["물꿩","Hydrophasianus chirurgus","Pheasant-tailed Jacana","phtjac1","물꿩","도요"],["중부리도요","Numenius phaeopus","Eurasian Whimbrel","whimbr5","도요","도요"],["쇠부리도요","Numenius minutus","Little Curlew","litcur","도요","도요"],["알락꼬리마도요","Numenius madagascariensis","Far Eastern Curlew","faecur","도요","도요"],["마도요","Numenius arquata","Eurasian Curlew","eurcur","도요","도요"],["큰뒷부리도요","Limosa lapponica","Bar-tailed Godwit","batgod","도요","도요"],["흑꼬리도요","Limosa limosa","Black-tailed Godwit","bktgod","도요","도요"],["큰부리도요","Limnodromus semipalmatus","Asian Dowitcher","asidow1","도요","도요"],["긴부리도요","Limnodromus scolopaceus","Long-billed Dowitcher","lobdow","도요","도요"],["꼬마도요","Lymnocryptes minimus","Jack Snipe","jacsni","도요","도요"],["멧도요","Scolopax rusticola","Eurasian Woodcock","eurwoo","도요","도요"],["청도요","Gallinago solitaria","Solitary Snipe","solsni1","도요","도요"],["꺅도요사촌","Gallinago megala","Swinhoe's Snipe","swisni1","도요","도요"],["바늘꼬리도요","Gallinago stenura","Pin-tailed Snipe","pitsni","도요","도요"],["큰꺅도요","Gallinago hardwickii","Latham's Snipe","latsni1","도요","도요"],["꺅도요","Gallinago gallinago","Common Snipe","comsni","도요","도요"],["큰지느러미발도요","Phalaropus tricolor","Wilson's Phalarope","wilpha","도요","도요"],["붉은배지느러미발도요","Phalaropus fulicarius","Red Phalarope","redpha1","도요","도요"],["지느러미발도요","Phalaropus lobatus","Red-necked Phalarope","renpha","도요","도요"],["뒷부리도요","Xenus cinereus","Terek Sandpiper","tersan","도요","도요"],["깝작도요","Actitis hypoleucos","Common Sandpiper","comsan","도요","도요"],["삑삑도요","Tringa ochropus","Green Sandpiper","grnsan","도요","도요"],["노랑발도요","Tringa brevipes","Gray-tailed Tattler","gyttat1","도요","도요"],["쇠청다리도요","Tringa stagnatilis","Marsh Sandpiper","marsan","도요","도요"],["알락도요","Tringa glareola","Wood Sandpiper","woosan","도요","도요"],["붉은발도요","Tringa totanus","Common Redshank","comred1","도요","도요"],["청다리도요사촌","Tringa guttifer","Nordmann's Greenshank","norgre1","도요","도요"],["학도요","Tringa erythropus","Spotted Redshank","spored","도요","도요"],["청다리도요","Tringa nebularia","Common Greenshank","comgre","도요","도요"],["꼬까도요","Arenaria interpres","Ruddy Turnstone","rudtur","도요","도요"],["붉은어깨도요","Calidris tenuirostris","Great Knot","grekno","도요","도요"],["붉은가슴도요","Calidris canutus","Red Knot","redkno","도요","도요"],["목도리도요","Calidris pugnax","Ruff","ruff","도요","도요"],["송곳부리도요","Calidris falcinellus","Broad-billed Sandpiper","brbsan","도요","도요"],["메추라기도요","Calidris acuminata","Sharp-tailed Sandpiper","shtsan","도요","도요"],["붉은갯도요","Calidris ferruginea","Curlew Sandpiper","cursan","도요","도요"],["흰꼬리좀도요","Calidris temminckii","Temminck's Stint","temsti","도요","도요"],["종달도요","Calidris subminuta","Long-toed Stint","lotsti","도요","도요"],["좀도요","Calidris ruficollis","Red-necked Stint","rensti","도요","도요"],["넓적부리도요","Calidris pygmaea","Spoon-billed Sandpiper","spbsan1","도요","도요"],["누른도요","Calidris subruficollis","Buff-breasted Sandpiper","bubsan","도요","도요"],["세가락도요","Calidris alba","Sanderling","sander","도요","도요"],["민물도요","Calidris alpina","Dunlin","dunlin","도요","도요"],["작은도요","Calidris minuta","Little Stint","litsti","도요","도요"],["아메리카메추라기도요","Calidris melanotos","Pectoral Sandpiper","pecsan","도요","도요"],["제비물떼새","Glareola maldivarum","Oriental Pratincole","oripra","제비물떼새","도요"],["흰제비갈매기","Gygis alba","Atlantic White-Tern","whiter3","갈매기","도요"],["알류샨제비갈매기","Onychoprion aleuticus","Aleutian Tern","aleter1","갈매기","도요"],["검은등제비갈매기","Onychoprion fuscatus","Sooty Tern","sooter1","갈매기","도요"],["에위니아제비갈매기","Onychoprion anaethetus","Bridled Tern","briter1","갈매기","도요"],["쇠제비갈매기","Sternula albifrons","Little Tern","litter1","갈매기","도요"],["큰부리제비갈매기","Gelochelidon nilotica","Gull-billed Tern","gubter2","갈매기","도요"],["붉은부리큰제비갈매기","Hydroprogne caspia","Caspian Tern","caster1","갈매기","도요"],["구레나룻제비갈매기","Chlidonias hybrida","Whiskered Tern","whiter2","갈매기","도요"],["검은제비갈매기","Chlidonias niger","Black Tern","blkter","갈매기","도요"],["흰죽지제비갈매기","Chlidonias leucopterus","White-winged Tern","whwter","갈매기","도요"],["제비갈매기","Sterna hirundo","Common Tern","comter","갈매기","도요"],["긴꼬리제비갈매기","Sterna dougallii","Roseate Tern","roster","갈매기","도요"],["큰제비갈매기","Thalasseus bergii","Great Crested Tern","grcter1","갈매기","도요"],["뿔제비갈매기","Thalasseus bernsteini","Chinese Crested Tern","chcter2","갈매기","도요"],["꼬마갈매기","Hydrocoloeus minutus","Little Gull","litgul","갈매기","도요"],["세가락갈매기","Rissa tridactyla","Black-legged Kittiwake","bklkit","갈매기","도요"],["북극흰갈매기","Pagophila eburnea","Ivory Gull","ivogul","갈매기","도요"],["목테갈매기","Xema sabini","Sabine's Gull","sabgul","갈매기","도요"],["검은머리갈매기","Saundersilarus saundersi","Saunders's Gull","saugul2","갈매기","도요"],["긴목갈매기","Chroicocephalus genei","Slender-billed Gull","slbgul1","갈매기","도요"],["붉은부리갈매기","Chroicocephalus ridibundus","Black-headed Gull","bkhgul","갈매기","도요"],["갈색머리갈매기","Chroicocephalus brunnicephalus","Brown-headed Gull","bnhgul1","갈매기","도요"],["큰검은머리갈매기","Ichthyaetus ichthyaetus","Pallas's Gull","gbhgul2","갈매기","도요"],["고대갈매기","Ichthyaetus relictus","Relict Gull","relgul2","갈매기","도요"],["괭이갈매기","Larus crassirostris","Black-tailed Gull","bktgul","갈매기","도요"],["갈매기","Larus canus","Common Gull","mewgul","갈매기","도요"],["재갈매기","Larus vegae","Vega Gull","veggul1","갈매기","도요"],["한국재갈매기","Larus mongolicus","Mongolian Gull","casgul4","갈매기","도요"],["흰갈매기","Larus hyperboreus","Glaucous Gull","glagul","갈매기","도요"],["작은노랑발갈매기","Larus fuscus","Lesser Black-backed Gull","lbbgul","갈매기","도요"],["옅은재갈매기","Larus smithsonianus","American Herring Gull","amhgul1","갈매기","도요"],["수리갈매기","Larus glaucescens","Glaucous-winged Gull","glwgul","갈매기","도요"],["큰재갈매기","Larus schistisagus","Slaty-backed Gull","slbgul","갈매기","도요"],["작은흰갈매기","Larus glaucoides","Iceland Gull","y00478","갈매기","도요"],["긴꼬리도둑갈매기","Stercorarius longicaudus","Long-tailed Jaeger","lotjae","도둑갈매기","도요"],["북극도둑갈매기","Stercorarius parasiticus","Parasitic Jaeger","parjae","도둑갈매기","도요"],["넓적꼬리도둑갈매기","Stercorarius pomarinus","Pomarine Jaeger","pomjae","도둑갈매기","도요"],["큰도둑갈매기","Stercorarius maccormicki","South Polar Skua","sopsku1","도둑갈매기","도요"],["흰수염바다오리","Cerorhinca monocerata","Rhinoceros Auklet","rhiauk","바다오리","도요"],["댕기바다오리","Fratercula cirrhata","Tufted Puffin","tufpuf","바다오리","도요"],["작은바다오리","Aethia pusilla","Least Auklet","leaauk","바다오리","도요"],["뿔바다오리","Aethia cristatella","Crested Auklet","creauk","바다오리","도요"],["알락쇠오리","Brachyramphus perdix","Long-billed Murrelet","lobmur","바다오리","도요"],["흰눈썹바다오리","Cepphus carbo","Spectacled Guillemot","spegui1","바다오리","도요"],["큰부리바다오리","Uria lomvia","Thick-billed Murre","thbmur","바다오리","도요"],["바다오리","Uria aalge","Common Murre","commur","바다오리","도요"],["바다쇠오리","Synthliboramphus antiquus","Ancient Murrelet","ancmur","바다오리","도요"],["뿔쇠오리","Synthliboramphus wumizusume","Japanese Murrelet","japmur1","바다오리","도요"],["아비","Gavia stellata","Red-throated Loon","retloo","아비","아비"],["큰회색머리아비","Gavia arctica","Arctic Loon","arcloo","아비","아비"],["회색머리아비","Gavia pacifica","Pacific Loon","pacloo","아비","아비"],["흰부리아비","Gavia adamsii","Yellow-billed Loon","yebloo","아비","아비"],["검은등알바트로스","Phoebastria immutabilis","Laysan Albatross","layalb","알바트로스","슴새"],["검은발알바트로스","Phoebastria nigripes","Black-footed Albatross","bkfalb","알바트로스","슴새"],["알바트로스","Phoebastria albatrus","Short-tailed Albatross","shtalb","알바트로스","슴새"],["바다제비","Hydrobates monorhis","Swinhoe's Storm-Petrel","swspet","바다제비","슴새"],["흰배슴새","Pterodroma hypoleuca","Bonin Petrel","bonpet","슴새","슴새"],["슴새","Calonectris leucomelas","Streaked Shearwater","strshe","슴새","슴새"],["쇠부리슴새","Ardenna tenuirostris","Short-tailed Shearwater","shtshe","슴새","슴새"],["붉은발슴새","Ardenna carneipes","Flesh-footed Shearwater","flfshe","슴새","슴새"],["검은슴새","Bulweria bulwerii","Bulwer's Petrel","bulpet","슴새","슴새"],["먹황새","Ciconia nigra","Black Stork","blasto1","황새","황새"],["황새","Ciconia boyciana","Oriental Stork","oristo1","황새","황새"],["군함조","Fregata ariel","Lesser Frigatebird","lesfri","군함조","얼가니새"],["큰군함조","Fregata minor","Great Frigatebird","grefri","군함조","얼가니새"],["붉은발얼가니새","Sula sula","Red-footed Booby","refboo","얼가니새","얼가니새"],["갈색얼가니새","Sula leucogaster","Brown Booby","brnboo","얼가니새","얼가니새"],["푸른얼굴얼가니새","Sula dactylatra","Masked Booby","masboo","얼가니새","얼가니새"],["쇠가마우지","Urile pelagicus","Pelagic Cormorant","pelcor","가마우지","얼가니새"],["가마우지","Phalacrocorax capillatus","Japanese Cormorant","japcor1","가마우지","얼가니새"],["민물가마우지","Phalacrocorax carbo","Great Cormorant","grecor","가마우지","얼가니새"],["검은머리흰따오기","Threskiornis melanocephalus","Black-headed Ibis","blhibi1","저어새","사다새"],["따오기","Nipponia nippon","Crested Ibis","creibi1","저어새","사다새"],["적갈색따오기","Plegadis falcinellus","Glossy Ibis","gloibi","저어새","사다새"],["노랑부리저어새","Platalea leucorodia","Eurasian Spoonbill","eurspo1","저어새","사다새"],["저어새","Platalea minor","Black-faced Spoonbill","blfspo1","저어새","사다새"],["알락해오라기","Botaurus stellaris","Eurasian Bittern","grebit1","백로","사다새"],["검은해오라기","Botaurus flavicollis","Black Bittern","blabit1","백로","사다새"],["열대붉은해오라기","Botaurus cinnamomeus","Cinnamon Bittern","cinbit1","백로","사다새"],["큰덤불해오라기","Botaurus eurhythmus","Schrenck's Bittern","schbit1","백로","사다새"],["덤불해오라기","Botaurus sinensis","Yellow Bittern","yelbit","백로","사다새"],["해오라기","Nycticorax nycticorax","Black-crowned Night Heron","bcnher","백로","사다새"],["푸른눈테해오라기","Gorsachius melanolophus","Malayan Night Heron","manher1","백로","사다새"],["붉은해오라기","Gorsachius goisagi","Japanese Night Heron","janher1","백로","사다새"],["흑로","Egretta sacra","Pacific Reef-Heron","pacreh1","백로","사다새"],["노랑부리백로","Egretta eulophotes","Chinese Egret","chiegr","백로","사다새"],["쇠백로","Egretta garzetta","Little Egret","litegr","백로","사다새"],["검은댕기해오라기","Butorides atricapilla","Little Heron","strher1","백로","사다새"],["흰날개해오라기","Ardeola bacchus","Chinese Pond-Heron","chpher1","백로","사다새"],["중대백로","Ardea alba","Great Egret","greegr","백로","사다새"],["중백로","Ardea intermedia","Medium Egret","integr1","백로","사다새"],["황로","Ardea coromanda","Eastern Cattle-Egret","categr2","백로","사다새"],["왜가리","Ardea cinerea","Gray Heron","graher1","백로","사다새"],["붉은왜가리","Ardea purpurea","Purple Heron","purher1","백로","사다새"],["큰사다새","Pelecanus onocrotalus","Great White Pelican","grwpel1","사다새","사다새"],["사다새","Pelecanus crispus","Dalmatian Pelican","dalpel1","사다새","사다새"],["물수리","Pandion haliaetus","Osprey","osprey","물수리","수리"],["검은어깨매","Elanus caeruleus","Black-winged Kite","bkskit1","수리","수리"],["수염수리","Gypaetus barbatus","Bearded Vulture","lammer1","수리","수리"],["벌매","Pernis ptilorhynchus","Oriental Honey-buzzard","orihob2","수리","수리"],["검은댕기수리","Aviceda leuphotes","Black Baza","blabaz1","수리","수리"],["고산대머리수리","Gyps himalayensis","Himalayan Griffon","himgri1","수리","수리"],["독수리","Aegypius monachus","Cinereous Vulture","cinvul1","수리","수리"],["관수리","Spilornis cheela","Crested Serpent-Eagle","crseag1","수리","수리"],["뿔매","Nisaetus nipalensis","Mountain Hawk-Eagle","mouhae1","수리","수리"],["항라머리검독수리","Clanga clanga","Greater Spotted Eagle","grseag1","수리","수리"],["흰점어깨수리","Hieraaetus pennatus","Booted Eagle","booeag1","수리","수리"],["초원수리","Aquila nipalensis","Steppe Eagle","steeag1","수리","수리"],["흰죽지수리","Aquila heliaca","Imperial Eagle","impeag1","수리","수리"],["검독수리","Aquila chrysaetos","Golden Eagle","goleag","수리","수리"],["흰배줄무늬수리","Aquila fasciata","Bonelli's Eagle","boneag2","수리","수리"],["붉은배새매","Tachyspiza soloensis","Chinese Sparrowhawk","grfhaw1","수리","수리"],["조롱이","Tachyspiza gularis","Japanese Sparrowhawk","japspa1","수리","수리"],["작은새매","Tachyspiza virgata","Besra","besra1","수리","수리"],["새매","Accipiter nisus","Eurasian Sparrowhawk","eurspa1","수리","수리"],["참매","Astur gentilis","Eurasian Goshawk","norgos1","수리","수리"],["개구리매","Circus spilonotus","Eastern Marsh Harrier","easmah1","수리","수리"],["잿빛개구리매","Circus cyaneus","Hen Harrier","norhar1","수리","수리"],["알락개구리매","Circus melanoleucos","Pied Harrier","piehar1","수리","수리"],["솔개","Milvus migrans","Black Kite","blakit1","수리","수리"],["참수리","Haliaeetus pelagicus","Steller's Sea-Eagle","stseag","수리","수리"],["흰꼬리수리","Haliaeetus albicilla","White-tailed Eagle","whteag","수리","수리"],["왕새매","Butastur indicus","Gray-faced Buzzard","gyfbuz1","수리","수리"],["털발말똥가리","Buteo lagopus","Rough-legged Hawk","rolhaw","수리","수리"],["큰말똥가리","Buteo hemilasius","Upland Buzzard","uplbuz1","수리","수리"],["말똥가리","Buteo japonicus","Eastern Buzzard","combuz6","수리","수리"],["히말라야말똥가리","Buteo refectus","Himalayan Buzzard","combuz9","수리","수리"],["대륙말똥가리","Buteo buteo","Common Buzzard","combuz1","수리","수리"],["가면올빼미","Tyto longimembris","Australasian Grass-Owl","ausgro1","가면올빼미","올빼미"],["솔부엉이","Ninox japonica","Northern Boobook","norboo1","올빼미","올빼미"],["금눈쇠올빼미","Athene noctua","Little Owl","litowl1","올빼미","올빼미"],["긴꼬리올빼미","Surnia ulula","Northern Hawk Owl","nohowl","올빼미","올빼미"],["소쩍새","Otus sunia","Oriental Scops-Owl","orsowl","올빼미","올빼미"],["큰소쩍새","Otus semitorques","Japanese Scops-Owl","jasowl1","올빼미","올빼미"],["칡부엉이","Asio otus","Long-eared Owl","loeowl","올빼미","올빼미"],["쇠부엉이","Asio flammeus","Short-eared Owl","sheowl","올빼미","올빼미"],["흰올빼미","Bubo scandiacus","Snowy Owl","snoowl1","올빼미","올빼미"],["수리부엉이","Bubo bubo","Eurasian Eagle-Owl","eueowl1","올빼미","올빼미"],["올빼미","Strix nivicolum","Himalayan Owl","himowl1","올빼미","올빼미"],["긴점박이올빼미","Strix uralensis","Ural Owl","uraowl1","올빼미","올빼미"],["후투티","Upupa epops","Common Hoopoe","hoopoe","후투티","코뿔새"],["파랑새","Eurystomus orientalis","Dollarbird","dollar1","파랑새","파랑새"],["호반새","Halcyon coromanda","Ruddy Kingfisher","rudkin1","물총새","파랑새"],["청호반새","Halcyon pileata","Black-capped Kingfisher","blckin1","물총새","파랑새"],["물총새","Alcedo atthis","Common Kingfisher","comkin1","물총새","파랑새"],["뿔호반새","Megaceryle lugubris","Crested Kingfisher","crekin1","물총새","파랑새"],["개미잡이","Jynx torquilla","Eurasian Wryneck","eurwry","딱다구리","딱다구리"],["아물쇠딱다구리","Yungipicus canicapillus","Gray-capped Pygmy Woodpecker","gycwoo1","딱다구리","딱다구리"],["쇠딱다구리","Yungipicus kizuki","Japanese Pygmy Woodpecker","pygwoo1","딱다구리","딱다구리"],["세가락딱다구리","Picoides tridactylus","Eurasian Three-toed Woodpecker","ettwoo1","딱다구리","딱다구리"],["쇠오색딱다구리","Dryobates minor","Lesser Spotted Woodpecker","leswoo1","딱다구리","딱다구리"],["붉은배오색딱다구리","Dendrocopos hyperythrus","Rufous-bellied Woodpecker","rubwoo1","딱다구리","딱다구리"],["오색딱다구리","Dendrocopos major","Great Spotted Woodpecker","grswoo","딱다구리","딱다구리"],["큰오색딱다구리","Dendrocopos leucotos","White-backed Woodpecker","whbwoo1","딱다구리","딱다구리"],["크낙새","Dryocopus javensis","White-bellied Woodpecker","whbwoo2","딱다구리","딱다구리"],["까막딱다구리","Dryocopus martius","Black Woodpecker","blawoo1","딱다구리","딱다구리"],["청딱다구리","Picus canus","Gray-headed Woodpecker","gyfwoo1","딱다구리","딱다구리"],["황조롱이","Falco tinnunculus","Eurasian Kestrel","eurkes","매","매"],["비둘기조롱이","Falco amurensis","Amur Falcon","amufal1","매","매"],["쇠황조롱이","Falco columbarius","Merlin","merlin","매","매"],["새호리기","Falco subbuteo","Eurasian Hobby","eurhob","매","매"],["헨다손매","Falco cherrug","Saker Falcon","sakfal1","매","매"],["흰매","Falco rusticolus","Gyrfalcon","gyrfal","매","매"],["매","Falco peregrinus","Peregrine Falcon","perfal","매","매"],["푸른날개팔색조","Pitta moluccensis","Blue-winged Pitta","blwpit1","팔색조","참새"],["팔색조","Pitta nympha","Fairy Pitta","faipit1","팔색조","참새"],["회색숲제비","Artamus fuscus","Ashy Woodswallow","ashwoo2","숲제비","참새"],["할미새사촌","Pericrocotus divaricatus","Ashy Minivet","ashmin1","할미새사촌","참새"],["검은가슴할미새사촌","Pericrocotus tegimae","Ryukyu Minivet","ryumin1","할미새사촌","참새"],["갈색할미새사촌","Pericrocotus cantonensis","Brown-rumped Minivet","brrmin1","할미새사촌","참새"],["검은할미새사촌","Lalage melaschistos","Black-winged Cuckooshrike","bkwcus1","할미새사촌","참새"],["꾀꼬리","Oriolus chinensis","Black-naped Oriole","blnori1","꾀꼬리","참새"],["큰부리바람까마귀","Dicrurus annectens","Crow-billed Drongo","crbdro1","바람까마귀","참새"],["바람까마귀","Dicrurus hottentottus","Hair-crested Drongo","hacdro1","바람까마귀","참새"],["회색바람까마귀","Dicrurus leucophaeus","Ashy Drongo","ashdro1","바람까마귀","참새"],["검은바람까마귀","Dicrurus macrocercus","Black Drongo","bladro1","바람까마귀","참새"],["북방긴꼬리딱새","Terpsiphone incei","Amur Paradise-Flycatcher","amupaf1","긴꼬리딱새","참새"],["긴꼬리딱새","Terpsiphone atrocaudata","Black Paradise-Flycatcher","japfly1","긴꼬리딱새","참새"],["물때까치","Lanius sphenocercus","Chinese Gray Shrike","chgshr1","때까치","참새"],["재때까치","Lanius borealis","Northern Shrike","norshr4","때까치","참새"],["칡때까치","Lanius tigrinus","Tiger Shrike","tigshr1","때까치","참새"],["덤불때까치","Lanius isabellinus","Isabelline Shrike","isashr1","때까치","참새"],["붉은등때까치","Lanius collurio","Red-backed Shrike","rebshr1","때까치","참새"],["붉은꼬리때까치","Lanius phoenicuroides","Red-tailed Shrike","rutshr2","때까치","참새"],["노랑때까치","Lanius cristatus","Brown Shrike","brnshr","때까치","참새"],["때까치","Lanius bucephalus","Bull-headed Shrike","buhshr1","때까치","참새"],["긴꼬리때까치","Lanius schach","Long-tailed Shrike","lotshr1","때까치","참새"],["회색등때까치","Lanius tephronotus","Gray-backed Shrike","gybshr1","때까치","참새"],["어치","Garrulus glandarius","Eurasian Jay","eurjay1","까마귀","참새"],["물까치","Cyanopica cyanus","Azure-winged Magpie","azwmag2","까마귀","참새"],["까치","Pica serica","Oriental Magpie","orimag1","까마귀","참새"],["잣까마귀","Nucifraga caryocatactes","Northern Nutcracker","eurnut3","까마귀","참새"],["붉은부리까마귀","Pyrrhocorax pyrrhocorax","Red-billed Chough","rebcho1","까마귀","참새"],["갈까마귀","Coloeus dauuricus","Daurian Jackdaw","daujac1","까마귀","참새"],["집까마귀","Corvus splendens","House Crow","houcro1","까마귀","참새"],["떼까마귀","Corvus frugilegus","Rook","rook1","까마귀","참새"],["까마귀","Corvus corone","Carrion Crow","carcro1","까마귀","참새"],["큰부리까마귀","Corvus macrorhynchos","Large-billed Crow","labcro1","까마귀","참새"],["큰까마귀","Corvus corax","Common Raven","comrav","까마귀","참새"],["황여새","Bombycilla garrulus","Bohemian Waxwing","bohwax","여새","참새"],["홍여새","Bombycilla japonica","Japanese Waxwing","japwax1","여새","참새"],["회색머리노랑딱새","Culicicapa ceylonensis","Gray-headed Canary-Flycatcher","gyhcaf1","요정딱새","참새"],["진박새","Periparus ater","Coal Tit","coatit2","박새","참새"],["노랑배진박새","Pardaliparus venustulus","Yellow-bellied Tit","yebtit4","박새","참새"],["곤줄박이","Sittiparus varius","Varied Tit","vartit1","박새","참새"],["쇠박새","Poecile palustris","Marsh Tit","martit2","박새","참새"],["북방쇠박새","Poecile montanus","Willow Tit","wiltit1","박새","참새"],["노랑배박새","Parus major","Great Tit","gretit1","박새","참새"],["박새","Parus cinereus","Asian Tit","cintit13","박새","참새"],["작은노랑배박새","Parus monticolus","Green-backed Tit","grbtit1","박새","참새"],["스윈호오목눈이","Remiz consobrinus","Chinese Penduline-Tit","chptit1","스윈호오목눈이","참새"],["수염오목눈이","Panurus biarmicus","Bearded Reedling","bearee1","수염오목눈이","참새"],["종다리","Alauda arvensis","Eurasian Skylark","skylar","종다리","참새"],["뿔종다리","Galerida cristata","Crested Lark","crelar1","종다리","참새"],["해변종다리","Eremophila alpestris","Horned Lark","horlar","종다리","참새"],["쇠종다리","Calandrella dukhunensis","Mongolian Short-toed Lark","sstlar4","종다리","참새"],["흰날개종다리","Melanocorypha mongolica","Mongolian Lark","monlar1","종다리","참새"],["북방쇠종다리","Alaudala cheleensis","Asian Short-toed Lark","lstlar2","종다리","참새"],["직박구리","Hypsipetes amaurotis","Brown-eared Bulbul","brebul1","직박구리","참새"],["흰머리검은직박구리","Hypsipetes leucocephalus","Black Bulbul","blabul1","직박구리","참새"],["검은이마직박구리","Pycnonotus sinensis","Light-vented Bulbul","livbul1","직박구리","참새"],["갈색제비","Riparia riparia","Bank Swallow","banswa","제비","참새"],["바위산제비","Ptyonoprogne rupestris","Eurasian Crag-Martin","eurcrm1","제비","참새"],["제비","Hirundo rustica","Barn Swallow","barswa","제비","참새"],["흰턱제비","Delichon lagopodum","Siberian House-Martin","comhom2","제비","참새"],["흰털발제비","Delichon dasypus","Asian House-Martin","ashmar1","제비","참새"],["귀제비","Cecropis daurica","Eastern Red-rumped Swallow","y00621","제비","참새"],["섬휘파람새","Horornis diphone","Japanese Bush Warbler","jabwar","휘파람새","참새"],["휘파람새","Horornis canturians","Manchurian Bush Warbler","manbuw1","휘파람새","참새"],["숲새","Urosphena squameiceps","Asian Stubtail","asistu1","휘파람새","참새"],["오목눈이","Aegithalos caudatus","Long-tailed Tit","lottit1","휘파람새","참새"],["검은턱오목눈이","Aegithalos glaucogularis","Silver-throated Tit","lottit5","휘파람새","참새"],["노랑가슴솔새","Phylloscopus sibilatrix","Wood Warbler","woowar","솔새","참새"],["연노랑눈썹솔새","Phylloscopus humei","Hume's Warbler","humwar1","솔새","참새"],["노랑눈썹솔새","Phylloscopus inornatus","Yellow-browed Warbler","yebwar3","솔새","참새"],["연노랑허리솔새","Phylloscopus yunnanensis","Chinese Leaf Warbler","chilew1","솔새","참새"],["노랑허리솔새","Phylloscopus proregulus","Pallas's Leaf Warbler","palwar5","솔새","참새"],["쇠긴다리솔새사촌","Phylloscopus armandii","Yellow-streaked Warbler","yeswar1","솔새","참새"],["긴다리솔새사촌","Phylloscopus schwarzi","Radde's Warbler","radwar1","솔새","참새"],["노랑배솔새사촌","Phylloscopus affinis","Tickell's Leaf Warbler","y00989","솔새","참새"],["솔새사촌","Phylloscopus fuscatus","Dusky Warbler","duswar","솔새","참새"],["담황턱솔새","Phylloscopus subaffinis","Buff-throated Warbler","butwar1","솔새","참새"],["연노랑솔새","Phylloscopus trochilus","Willow Warbler","wlwwar","솔새","참새"],["검은다리솔새","Phylloscopus collybita","Common Chiffchaff","comchi1","솔새","참새"],["산솔새","Phylloscopus coronatus","Eastern Crowned Warbler","eacwar1","솔새","참새"],["회색머리노랑솔새","Phylloscopus tephrocephalus","Gray-crowned Warbler","gycwar1","솔새","참새"],["회색정수리노랑솔새","Phylloscopus omeiensis","Martens's Warbler","marwar4","솔새","참새"],["버들솔새","Phylloscopus plumbeitarsus","Two-barred Warbler","grewar2","솔새","참새"],["사할린되솔새","Phylloscopus borealoides","Sakhalin Leaf Warbler","salwar1","솔새","참새"],["되솔새","Phylloscopus tenellipes","Pale-legged Leaf Warbler","pllwar1","솔새","참새"],["솔새","Phylloscopus xanthodryas","Japanese Leaf Warbler","arcwar3","솔새","참새"],["큰솔새","Phylloscopus examinandus","Kamchatka Leaf Warbler","arcwar2","솔새","참새"],["쇠솔새","Phylloscopus borealis","Arctic Warbler","arcwar1","솔새","참새"],["노랑배솔새","Phylloscopus ricketti","Sulphur-breasted Warbler","subwar3","솔새","참새"],["히말라야산솔새","Phylloscopus claudiae","Claudia's Leaf Warbler","clalew1","솔새","참새"],["개개비","Acrocephalus orientalis","Oriental Reed Warbler","orrwar1","개개비","참새"],["쇠개개비","Acrocephalus bistrigiceps","Black-browed Reed Warbler","bbrwar1","개개비","참새"],["풀쇠개개비","Acrocephalus schoenobaenus","Sedge Warbler","sedwar1","개개비","참새"],["우수리개개비","Acrocephalus tangorum","Manchurian Reed Warbler","manrew1","개개비","참새"],["북방쇠개개비","Acrocephalus agricola","Paddyfield Warbler","padwar1","개개비","참새"],["덤불개개비","Acrocephalus dumetorum","Blyth's Reed Warbler","blrwar1","개개비","참새"],["큰부리개개비","Arundinax aedon","Thick-billed Warbler","thbwar1","개개비","참새"],["쇠덤불개개비","Iduna caligata","Booted Warbler","boowar1","개개비","참새"],["붉은허리개개비","Helopsaltes fasciolatus","Gray's Grasshopper Warbler","grgwar1","섬개개비","참새"],["큰개개비","Helopsaltes pryeri","Marsh Grassbird","margra1","섬개개비","참새"],["북방개개비","Helopsaltes certhiola","Pallas's Grasshopper Warbler","pagwar1","섬개개비","참새"],["알락꼬리쥐발귀","Helopsaltes ochotensis","Middendorff's Grasshopper Warbler","migwar","섬개개비","참새"],["섬개개비","Helopsaltes pleskei","Pleske's Grasshopper Warbler","plewar1","섬개개비","참새"],["쥐발귀개개비","Locustella lanceolata","Lanceolated Warbler","lanwar","섬개개비","참새"],["땅개개비","Locustella tacsanowskia","Chinese Bush Warbler","chbwar1","섬개개비","참새"],["점무늬가슴쥐발귀","Locustella davidi","Baikal Bush Warbler","spobuw1","섬개개비","참새"],["개개비사촌","Cisticola juncidis","Zitting Cisticola","zitcis1","개개비사촌","참새"],["비늘무늬덤불개개비","Curruca nisoria","Barred Warbler","barwar1","흰턱딱새","참새"],["쇠흰턱딱새","Curruca curruca","Lesser Whitethroat","leswhi4","흰턱딱새","참새"],["꼬리치레","Rhopophilus pekinensis","Beijing Babbler","beibab1","붉은머리오목눈이","참새"],["붉은머리오목눈이","Suthora webbiana","Vinous-throated Parrotbill","vitpar1","붉은머리오목눈이","참새"],["한국동박새","Zosterops erythropleurus","Chestnut-flanked White-eye","cfweye1","동박새","참새"],["작은동박새","Zosterops simplex","Swinhoe's White-eye","swiwhe1","동박새","참새"],["동박새","Zosterops japonicus","Warbling White-eye","warwhe1","동박새","참새"],["눈썹웃음지빠귀","Garrulax canorus","Chinese Hwamei","melthr","눈썹웃음지빠귀","참새"],["상모솔새","Regulus regulus","Goldcrest","goldcr1","상모솔새","참새"],["굴뚝새","Troglodytes troglodytes","Eurasian Wren","winwre4","굴뚝새","참새"],["쇠동고비","Sitta villosa","Snowy-browed Nuthatch","snbnut1","동고비","참새"],["동고비","Sitta europaea","Eurasian Nuthatch","eurnut2","동고비","참새"],["나무발발이","Certhia familiaris","Eurasian Treecreeper","eurtre1","나무발발이","참새"],["검은뿔찌르레기","Acridotheres cristatellus","Crested Myna","cremyn","찌르레기","참새"],["자바뿔찌르레기","Acridotheres javanicus","Javan Myna","whvmyn","찌르레기","참새"],["검은머리갈색찌르레기","Acridotheres tristis","Common Myna","commyn","찌르레기","참새"],["붉은부리찌르레기","Spodiopsar sericeus","Red-billed Starling","rebsta1","찌르레기","참새"],["찌르레기","Spodiopsar cineraceus","White-cheeked Starling","whcsta1","찌르레기","참새"],["북방쇠찌르레기","Agropsar sturninus","Daurian Starling","dausta1","찌르레기","참새"],["쇠찌르레기","Agropsar philippensis","Chestnut-cheeked Starling","chcsta1","찌르레기","참새"],["잿빛쇠찌르레기","Sturnia sinensis","White-shouldered Starling","whssta2","찌르레기","참새"],["분홍찌르레기","Pastor roseus","Rosy Starling","rossta2","찌르레기","참새"],["흰점찌르레기","Sturnus vulgaris","European Starling","eursta","찌르레기","참새"],["호랑지빠귀","Zoothera aurea","White's Thrush","scathr2","지빠귀","참새"],["흰눈썹지빠귀","Geokichla sibirica","Siberian Thrush","sibthr1","지빠귀","참새"],["귤빛지빠귀","Geokichla citrina","Orange-headed Thrush","orhthr1","지빠귀","참새"],["큰점지빠귀","Turdus mupinensis","Chinese Thrush","chithr2","지빠귀","참새"],["대륙점지빠귀","Turdus viscivorus","Mistle Thrush","misthr1","지빠귀","참새"],["대륙검은지빠귀","Turdus mandarinus","Chinese Blackbird","chibla1","지빠귀","참새"],["붉은날개지빠귀","Turdus iliacus","Redwing","redwin","지빠귀","참새"],["검은지빠귀","Turdus cardis","Japanese Thrush","japthr1","지빠귀","참새"],["되지빠귀","Turdus hortulorum","Gray-backed Thrush","gybthr1","지빠귀","참새"],["흰눈썹붉은배지빠귀","Turdus obscurus","Eyebrowed Thrush","eyethr","지빠귀","참새"],["흰배지빠귀","Turdus pallidus","Pale Thrush","palthr1","지빠귀","참새"],["갈색지빠귀","Turdus feae","Gray-sided Thrush","gysthr1","지빠귀","참새"],["붉은배지빠귀","Turdus chrysolaus","Brown-headed Thrush","brhthr1","지빠귀","참새"],["회색머리지빠귀","Turdus pilaris","Fieldfare","fieldf","지빠귀","참새"],["검은목지빠귀","Turdus atrogularis","Black-throated Thrush","datthr1","지빠귀","참새"],["붉은목지빠귀","Turdus ruficollis","Red-throated Thrush","retthr1","지빠귀","참새"],["개똥지빠귀","Turdus eunomus","Dusky Thrush","dusthr2","지빠귀","참새"],["노랑지빠귀","Turdus naumanni","Naumann's Thrush","dusthr1","지빠귀","참새"],["까치딱새","Copsychus saularis","Oriental Magpie-Robin","magrob","솔딱새","참새"],["제비딱새","Muscicapa griseisticta","Gray-streaked Flycatcher","gysfly1","솔딱새","참새"],["솔딱새","Muscicapa sibirica","Dark-sided Flycatcher","dasfly","솔딱새","참새"],["회색머리딱새","Muscicapa ferruginea","Ferruginous Flycatcher","ferfly1","솔딱새","참새"],["갈색솔딱새","Muscicapa muttui","Brown-breasted Flycatcher","brbfly2","솔딱새","참새"],["쇠솔딱새","Muscicapa dauurica","Asian Brown Flycatcher","asbfly","솔딱새","참새"],["붉은가슴딱새","Niltava davidi","Fujian Niltava","fujnil1","솔딱새","참새"],["큰유리새","Cyanoptila cyanomelana","Blue-and-white Flycatcher","bawfly2","솔딱새","참새"],["대륙큰유리새","Cyanoptila cumatilis","Zappey's Flycatcher","zapfly1","솔딱새","참새"],["파랑딱새","Eumyias thalassinus","Verditer Flycatcher","verfly4","솔딱새","참새"],["꼬까울새","Erithacus rubecula","European Robin","eurrob1","솔딱새","참새"],["흰눈썹울새","Luscinia svecica","Bluethroat","blueth","솔딱새","참새"],["흰꼬리유리딱새","Myiomela leucura","White-tailed Robin","whtrob2","솔딱새","참새"],["진홍가슴","Calliope calliope","Siberian Rubythroat","sibrub","솔딱새","참새"],["쇠유리새","Larvivora cyane","Siberian Blue Robin","sibrob","솔딱새","참새"],["붉은가슴울새","Larvivora akahige","Japanese Robin","japrob2","솔딱새","참새"],["울새","Larvivora sibilans","Rufous-tailed Robin","rutrob1","솔딱새","참새"],["흰눈썹황금새","Ficedula zanthopygia","Yellow-rumped Flycatcher","korfly1","솔딱새","참새"],["북방황금새","Ficedula elisae","Green-backed Flycatcher","narfly1","솔딱새","참새"],["황금새","Ficedula narcissina","Narcissus Flycatcher","narfly2","솔딱새","참새"],["남방황금새","Ficedula owstoni","Ryukyu Flycatcher","narfly3","솔딱새","참새"],["노랑딱새","Ficedula mugimaki","Mugimaki Flycatcher","mugfly","솔딱새","참새"],["붉은가슴흰꼬리딱새","Ficedula parva","Red-breasted Flycatcher","rebfly","솔딱새","참새"],["흰꼬리딱새","Ficedula albicilla","Taiga Flycatcher","taifly1","솔딱새","참새"],["유리딱새","Tarsiger cyanurus","Red-flanked Bluetail","refblu1","솔딱새","참새"],["부채꼬리바위딱새","Phoenicurus fuliginosus","Plumbeous Redstart","plured1","솔딱새","참새"],["흰머리바위딱새","Phoenicurus leucocephalus","White-capped Redstart","whcred1","솔딱새","참새"],["검은머리딱새","Phoenicurus ochruros","Black Redstart","blared1","솔딱새","참새"],["흰이마딱새","Phoenicurus phoenicurus","Common Redstart","comred2","솔딱새","참새"],["딱새","Phoenicurus auroreus","Daurian Redstart","daured1","솔딱새","참새"],["꼬까직박구리","Monticola gularis","White-throated Rock-Thrush","wtrthr1","솔딱새","참새"],["바다직박구리","Monticola solitarius","Blue Rock-Thrush","burthr","솔딱새","참새"],["검은뺨딱새","Saxicola ferreus","Gray Bushchat","grybus1","솔딱새","참새"],["흰죽지검은딱새","Saxicola caprata","Pied Bushchat","piebus1","솔딱새","참새"],["검은딱새","Saxicola stejnegeri","Amur Stonechat","stonec7","솔딱새","참새"],["사막딱새","Oenanthe oenanthe","Northern Wheatear","norwhe","솔딱새","참새"],["긴다리사막딱새","Oenanthe isabellina","Isabelline Wheatear","isawhe1","솔딱새","참새"],["검은꼬리사막딱새","Oenanthe deserti","Desert Wheatear","deswhe1","솔딱새","참새"],["검은등사막딱새","Oenanthe pleschanka","Pied Wheatear","piewhe1","솔딱새","참새"],["물까마귀","Cinclus pallasii","Brown Dipper","brodip1","물까마귀","참새"],["섬참새","Passer cinnamomeus","Russet Sparrow","russpa2","참새","참새"],["참새","Passer montanus","Eurasian Tree Sparrow","eutspa","참새","참새"],["집참새","Passer domesticus","House Sparrow","houspa","참새","참새"],["얼룩무늬납부리새","Lonchura punctulata","Scaly-breasted Munia","nutman","납부리새","참새"],["바위종다리","Prunella collaris","Alpine Accentor","alpacc1","바위종다리","참새"],["멧종다리","Prunella montanella","Siberian Accentor","sibacc","바위종다리","참새"],["쇠바위종다리","Prunella rubida","Japanese Accentor","japacc1","바위종다리","참새"],["물레새","Dendronanthus indicus","Forest Wagtail","forwag1","할미새","참새"],["긴발톱할미새","Motacilla tschutschensis","Eastern Yellow Wagtail","eaywag","할미새","참새"],["노랑머리할미새","Motacilla citreola","Citrine Wagtail","citwag","할미새","참새"],["노랑할미새","Motacilla cinerea","Gray Wagtail","grywag","할미새","참새"],["알락할미새","Motacilla alba","White Wagtail","whiwag","할미새","참새"],["검은등할미새","Motacilla grandis","Japanese Wagtail","japwag1","할미새","참새"],["큰밭종다리","Anthus richardi","Richard's Pipit","ricpip1","할미새","참새"],["쇠밭종다리","Anthus godlewskii","Blyth's Pipit","blypip1","할미새","참새"],["풀밭종다리","Anthus pratensis","Meadow Pipit","meapip1","할미새","참새"],["나무밭종다리","Anthus trivialis","Tree Pipit","trepip","할미새","참새"],["힝둥새","Anthus hodgsoni","Olive-backed Pipit","olbpip","할미새","참새"],["흰등밭종다리","Anthus gustavi","Pechora Pipit","pecpip","할미새","참새"],["한국밭종다리","Anthus roseatus","Rosy Pipit","rospip1","할미새","참새"],["붉은가슴밭종다리","Anthus cervinus","Red-throated Pipit","retpip","할미새","참새"],["밭종다리","Anthus japonicus","Siberian Pipit","sibpip1","할미새","참새"],["옅은밭종다리","Anthus spinoletta","Water Pipit","watpip1","할미새","참새"],["푸른머리되새","Fringilla coelebs","Common Chaffinch","comcha","되새","참새"],["되새","Fringilla montifringilla","Brambling","brambl","되새","참새"],["콩새","Coccothraustes coccothraustes","Hawfinch","hawfin","되새","참새"],["밀화부리","Eophona migratoria","Yellow-billed Grosbeak","yebgro1","되새","참새"],["큰부리밀화부리","Eophona personata","Japanese Grosbeak","japgro1","되새","참새"],["솔양진이","Pinicola enucleator","Pine Grosbeak","pingro","되새","참새"],["멋쟁이새","Pyrrhula pyrrhula","Eurasian Bullfinch","eurbul","되새","참새"],["바위양진이","Bucanetes mongolicus","Mongolian Finch","monfin2","되새","참새"],["갈색양진이","Leucosticte arctoa","Asian Rosy-Finch","asrfin1","되새","참새"],["붉은양진이","Carpodacus erythrinus","Common Rosefinch","comros","되새","참새"],["긴꼬리홍양진이","Carpodacus sibiricus","Long-tailed Rosefinch","lotros1","되새","참새"],["양진이","Carpodacus roseus","Pallas's Rosefinch","palros2","되새","참새"],["방울새","Chloris sinica","Oriental Greenfinch","origre","되새","참새"],["홍방울새","Acanthis flammea","Redpoll","redpol1","되새","참새"],["솔잣새","Loxia curvirostra","Red Crossbill","redcro","되새","참새"],["흰죽지솔잣새","Loxia leucoptera","White-winged Crossbill","whwcro","되새","참새"],["검은머리방울새","Spinus spinus","Eurasian Siskin","eursis","되새","참새"],["긴발톱멧새","Calcarius lapponicus","Lapland Longspur","laplon","긴발톱멧새","참새"],["흰멧새","Plectrophenax nivalis","Snow Bunting","snobun","긴발톱멧새","참새"],["노랑멧새","Emberiza citrinella","Yellowhammer","yellow2","멧새","참새"],["흰머리멧새","Emberiza leucocephalos","Pine Bunting","pinbun","멧새","참새"],["바위멧새","Emberiza godlewskii","Godlewski's Bunting","godbun1","멧새","참새"],["멧새","Emberiza cioides","Meadow Bunting","meabun1","멧새","참새"],["점박이멧새","Emberiza jankowskii","Rufous-backed Bunting","rubbun1","멧새","참새"],["회색머리멧새","Emberiza hortulana","Ortolan Bunting","ortbun1","멧새","참새"],["흰배멧새","Emberiza tristrami","Tristram's Bunting","tribun1","멧새","참새"],["붉은뺨멧새","Emberiza fucata","Chestnut-eared Bunting","chebun2","멧새","참새"],["쇠붉은뺨멧새","Emberiza pusilla","Little Bunting","litbun","멧새","참새"],["노랑눈썹멧새","Emberiza chrysophrys","Yellow-browed Bunting","yebbun1","멧새","참새"],["쑥새","Emberiza rustica","Rustic Bunting","rusbun","멧새","참새"],["노랑턱멧새","Emberiza elegans","Yellow-throated Bunting","yetbun1","멧새","참새"],["검은머리촉새","Emberiza aureola","Yellow-breasted Bunting","yebbun","멧새","참새"],["꼬까참새","Emberiza rutila","Chestnut Bunting","chebun1","멧새","참새"],["검은머리멧새","Emberiza melanocephala","Black-headed Bunting","blhbun1","멧새","참새"],["붉은머리멧새","Emberiza bruniceps","Red-headed Bunting","rehbun1","멧새","참새"],["무당새","Emberiza sulphurata","Yellow Bunting","yelbun1","멧새","참새"],["촉새","Emberiza spodocephala","Black-faced Bunting","bkfbun1","멧새","참새"],["섬촉새","Emberiza personata","Masked Bunting","bkfbun2","멧새","참새"],["검은멧새","Emberiza variabilis","Gray Bunting","grybun","멧새","참새"],["북방검은머리쑥새","Emberiza pallasi","Pallas's Bunting","palbun","멧새","참새"],["쇠검은머리쑥새","Emberiza yessoensis","Ochre-rumped Bunting","ocrbun1","멧새","참새"],["검은머리쑥새","Emberiza schoeniclus","Reed Bunting","reebun","멧새","참새"],["흰정수리북미멧새","Zonotrichia leucophrys","White-crowned Sparrow","whcspa","신대륙멧새","참새"],["노랑정수리북미멧새","Zonotrichia atricapilla","Golden-crowned Sparrow","gocspa","신대륙멧새","참새"],["초원멧새","Passerculus sandwichensis","Savannah Sparrow","savspa","신대륙멧새","참새"]];
+function baseSpecies(){return BASE.map(function(r){return {ko:r[0],sci:r[1],en:r[2],code:r[3],fam:r[4],ord:r[5]}})}
+function mergeBase(d){
+ var by={};d.species=d.species||[];d.species.forEach(function(x){by[x.ko]=x});
+ BASE.forEach(function(r){var x=by[r[0]];if(x){x.sci=r[1];x.en=r[2];x.code=r[3];x.fam=r[4];x.ord=r[5]}else{var n={ko:r[0],sci:r[1],en:r[2],code:r[3],fam:r[4],ord:r[5]};d.species.push(n);by[r[0]]=n}});
+ var inBase={};BASE.forEach(function(r){inBase[r[0]]=1});
+ var used={};(d.obs||[]).forEach(function(o){used[o.ko]=1});
+ d.species=d.species.filter(function(x){return inBase[x.ko]||x.sci||x.en||used[x.ko]});
+ d.species.sort(function(a,b){return a.ko.localeCompare(b.ko)});
+ (d.trips||[]).forEach(function(t){if(typeof t.habitat==='string')t.habitat=t.habitat?[t.habitat]:[];['gear','disturb','habitat'].forEach(function(k){if(!Array.isArray(t[k]))t[k]=[]});if(t.temp==null)t.temp='';if(t.gps===undefined)t.gps=null});
+ return d}
+var INI='ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'.split('');
+
+var pad=function(n){return String(n).padStart(2,'0')};
+var todayStr=function(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+var nowStr=function(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
+var mins=function(a,b){if(!a||!b)return null;var x=a.split(':').map(Number),y=b.split(':').map(Number);var d=(y[0]*60+y[1])-(x[0]*60+x[1]);return d>=0?d:null};
+var fmtMin=function(m){return m>=60?Math.floor(m/60)+'시간 '+(m%60)+'분':m+'분'};
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)};
+var e=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var CH='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+var cho=function(s){return Array.from(s).map(function(c){var n=c.charCodeAt(0)-0xAC00;return n>=0&&n<11172?CH[Math.floor(n/588)]:c}).join('')};
+
+var nowSec=function(){var d=new Date();return nowStr()+':'+pad(d.getSeconds())};
+var fileStamp=function(){var d=new Date();return todayStr().replace(/-/g,'')+'_'+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())};
+var iniOf=function(ko){var c=cho(ko)[0];return {'ㄲ':'ㄱ','ㄸ':'ㄷ','ㅃ':'ㅂ','ㅆ':'ㅅ','ㅉ':'ㅈ'}[c]||c};
+var ebUrl=function(sp){return sp&&sp.code?'https://ebird.org/species/'+encodeURIComponent(sp.code):''};
+var LNK='display:block;text-align:center;text-decoration:none;color:inherit;line-height:30px';
+function spInfo(sp){
+ var m=[sp.sci,(sp.fam?sp.fam+'과':'')+(sp.ord?(sp.fam?' · ':'')+sp.ord+'목':'')].filter(Boolean).join(' · ');
+ var u=ebUrl(sp);
+ return (m?'<div class="mu" style="margin-top:2px">'+e(m)+'</div>':'')+(u?'<a class="btn" style="'+LNK+'" href="'+e(u)+'" target="_blank" rel="noopener noreferrer">eBird에서 보기</a>':'')}
+function cfLink(ko){var x=S.species.find(function(q){return q.ko===ko}),u=ebUrl(x);return u?'<a class="btn" style="'+LNK+'" href="'+e(u)+'" target="_blank" rel="noopener noreferrer">‘'+e(ko)+'’ eBird에서 보기</a>':''}
+var storageOK=true;
+function seed(){
+ return {v:1,set:{country:'KR',state:'45'},lists:JSON.parse(JSON.stringify(DEF)),
+  places:SEED_PLACES.map(function(n){return {id:uid(),name:n,lat:null,lon:null}}),
+  species:baseSpecies(),
+  trips:[],obs:[],feats:[],sel:null,backup:null};
+}
+function load(){
+ try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);if(d&&d.trips){for(var k in DEF){if(!d.lists||!d.lists[k])(d.lists=d.lists||{})[k]=DEF[k].slice()}d.set=d.set||{country:'KR',state:'45'};return mergeBase(d)}}}catch(x){storageOK=false}
+ return seed();
+}
+var S=load();
+function idbReq(fn){try{if(typeof indexedDB==='undefined')return;var r=indexedDB.open('birdlog',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};r.onsuccess=function(){try{fn(r.result)}catch(x){}};r.onerror=function(){}}catch(x){}}
+function idbPut(txt){idbReq(function(db){var tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(txt,'state');tx.oncomplete=function(){db.close()}})}
+function idbGet(cb){idbReq(function(db){var g=db.transaction('kv','readonly').objectStore('kv').get('state');g.onsuccess=function(){cb(g.result);db.close()};g.onerror=function(){cb(null)}})}
+var idbOK=false;
+function persist(){var txt=JSON.stringify(S);try{localStorage.setItem(KEY,txt);storageOK=true}catch(x){storageOK=false}if(idbOK)idbPut(txt)}
+function save(){S.mt=Date.now();persist()}
+persist();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(x){}
+
+var ui={tab:'trip',q:'',sheet:null,editNew:false,draft:null,ex:null,lvl:'sure',csv:null,pf:{name:'',lat:'',lon:''},sf:{ko:'',en:'',sci:''},imp:'',le:'habitat',leText:null,restore:'',delTrip:null,toast:'',more:{},rec:null};
+var app=document.getElementById('app'),sheetEl=document.getElementById('sheet'),toastEl=document.getElementById('toast');
+
+function curTrip(){return S.trips.find(function(t){return t.id===S.sel})||null}
+function spOf(ko){return S.species.find(function(s){return s.ko===ko})||{ko:ko,en:'',sci:''}}
+function newDraft(){var last=S.trips.slice().sort(function(a,b){return (b.date+b.start).localeCompare(a.date+a.start)})[0];
+ return {id:uid(),date:todayStr(),start:nowStr(),end:'',place:last?last.place:'',comp:last?last.comp:'',habitat:[],weather:'',temp:'',wind:'',gear:last&&last.gear?last.gear.slice():[],disturb:[],water:'',purpose:'',transport:'',gps:null,protocol:'Traveling',observers:1,all:true,km:null,notes:'',exp:''}}
+function tripObs(id){return S.obs.filter(function(o){return o.trip===id})}
+function sumOf(t){var o=tripObs(t.id),n=0,x=false;o.forEach(function(r){if(typeof r.count==='number')n+=r.count;else x=true});return o.length+'종'+(n||x?' · '+(n?n+'마리':'')+(x?(n?' 외 ':'')+'수 미확인':''):'')}
+function placeName(t){var p=S.places.find(function(p){return p.id===t.place});return p?p.name:'장소 미정'}
+function tripLabel(t){return t.date.slice(5).replace('-','/')+' '+t.start+' · '+placeName(t)}
+function toast(m){ui.toast=m;toastEl.innerHTML='<div class="toast" role="status">'+e(m)+'</div>';clearTimeout(toast.t);toast.t=setTimeout(function(){toastEl.innerHTML='';ui.toast=''},2400)}
+
+/* ---------- chips ---------- */
+function chips(opts,sel,scope,f,multi,num){
+ return '<div class="chips">'+opts.map(function(o){
+  var v=Array.isArray(o)?o[0]:o,l=Array.isArray(o)?o[1]:o;
+  var on=multi?(sel||[]).indexOf(v)>=0:String(sel)===String(v);
+  return '<button type="button" class="chip" aria-pressed="'+on+'" data-act="chip" data-s="'+scope+'" data-f="'+f+'" data-v="'+e(v)+'" data-m="'+(multi?1:0)+'" data-n="'+(num?1:0)+'">'+e(l)+'</button>'}).join('')+'</div>'}
+function target(s){
+ if(s==='trip')return ui.editNew?ui.draft:curTrip();
+ if(s==='obs'||s==='feat')return ui.sheet&&ui.sheet.d;
+ if(s==='pf')return ui.pf; if(s==='sf')return ui.sf; if(s==='set')return S.set;
+ return null}
+function afterSet(s){if(s==='trip'&&!ui.editNew)save()}
+
+/* ---------- header / nav ---------- */
+function head(){
+ var t=curTrip(),T={trip:'탐조',rec:'기록',feat:'특징',exp:'내보내기',set:'설정'}[ui.tab];
+ var c=t?tripLabel(t)+' · '+sumOf(t):'열려 있는 탐조 없음';
+ return '<header><div class="t">'+T+'</div><div class="c">'+e(c)+' · <span id="sv">'+e(ui.sv?'자동 저장 '+ui.sv:'자동 저장')+'</span></div></header>'+(storageOK?'':'<div class="warn" style="margin:8px 16px">이 화면에서는 기록이 저장되지 않습니다. 내보내기 탭에서 백업을 저장하세요.</div>')+(t&&t.end&&(!S.bk||S.mt>S.bk)?'<div class="warn" style="margin:8px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between"><span>마지막 백업 뒤에 바뀐 기록이 있습니다.</span><button type="button" class="chip sm" data-act="bak">지금 백업</button></div>':'')}
+function tabbar(){
+ return '<nav aria-label="메뉴">'+[['trip','탐조'],['rec','기록'],['feat','특징'],['exp','내보내기'],['set','설정']].map(function(a){return '<button type="button" data-act="tab" data-v="'+a[0]+'"'+(ui.tab===a[0]?' aria-current="page"':'')+'>'+a[1]+'</button>'}).join('')+'</nav>'}
+
+/* ---------- trip tab ---------- */
+function topComp(){
+ var c={},last={};
+ S.trips.forEach(function(t){if(t.comp){c[t.comp]=(c[t.comp]||0)+1;var k=t.date+t.start;if(!last[t.comp]||k>last[t.comp])last[t.comp]=k}});
+ return Object.keys(c).sort(function(a,b){return c[b]-c[a]||(last[b]>last[a]?1:-1)}).slice(0,3)}
+function tripSummary(t){
+ var o=tripObs(t.id),n=0;o.forEach(function(r){if(typeof r.count==='number')n+=r.count});
+ var dur=t.end?mins(t.start,t.end):(t.date===todayStr()?mins(t.start,nowStr()):null);
+ var visit=t.place?S.trips.filter(function(x){return x.place===t.place&&(x.date+x.start)<=(t.date+t.start)}).length:0;
+ var m=+t.date.slice(5,7),sea=m>=3&&m<=5?'봄':m>=6&&m<=8?'여름':m>=9&&m<=11?'가을':'겨울';
+ return [dur!=null?'소요 '+fmtMin(dur):'',o.length+'종',n?n+'마리':'',visit?'이 장소 '+visit+'번째 방문':'',m+'월 · '+sea].filter(Boolean).join(' · ')}
+function moreBox(key,label,inner){
+ var on=!!ui.more[key];
+ return '<button type="button" class="btn" style="margin-top:12px" aria-expanded="'+on+'" data-act="more" data-v="'+key+'">'+(on?'접기':'더보기')+' · '+e(label)+'</button>'+(on?'<div class="card" style="margin-top:10px">'+inner+'</div>':'')}
+function viewTrip(){
+ var t=curTrip();
+ if(!t&&!ui.editNew){ui.editNew=true;ui.draft=newDraft()}
+ var f=ui.editNew?ui.draft:t,L=S.lists,h='';
+ if(!ui.editNew)h+='<div class="ok" style="margin:0 0 10px">'+e(tripSummary(f))+'</div>';
+ h+='<div class="card"><div class="lab">날짜와 시각</div><div class="inl"><input type="date" value="'+e(f.date)+'" data-act="inp" data-s="trip" data-f="date" aria-label="날짜"><input type="time" value="'+e(f.start)+'" data-act="inp" data-s="trip" data-f="start" aria-label="시작 시각"></div>';
+ if(!ui.editNew)h+='<div class="lab">종료 시각</div><div class="inl"><input type="time" value="'+e(f.end)+'" data-act="inp" data-s="trip" data-f="end" aria-label="종료 시각"><button type="button" class="chip" data-act="endnow">지금으로</button></div>';
+ h+='<div class="lab">장소</div>'+chips(S.places.map(function(p){return [p.id,p.name]}),f.place,'trip','place',false);
+ h+='<div class="inl" style="margin-top:8px"><input type="text" placeholder="새 장소 이름 입력" value="'+e(ui.pn||'')+'" data-act="inp" data-s="ui" data-f="pn" aria-label="새 장소 이름" autocomplete="off"><button type="button" class="chip" style="flex:0 0 auto" data-act="addplace2">추가</button></div>';
+ h+='<div class="lab">탐조 방식</div>'+chips(PROTO,f.protocol,'trip','protocol',false);
+ h+='<div class="lab">관찰자 수</div><input type="number" inputmode="numeric" min="1" step="1" value="'+e(f.observers||'')+'" data-act="inp" data-s="trip" data-f="observers" aria-label="관찰자 수">';
+ var cop=topComp();if(f.comp&&cop.indexOf(f.comp)<0)cop=[f.comp].concat(cop);
+ h+='<div class="lab">동행</div>'+(cop.length?chips(cop,f.comp,'trip','comp',false):'<div class="mu">자주 함께한 사람이 여기에 나옵니다</div>');
+ h+='<div class="inl" style="margin-top:8px"><input type="text" placeholder="동행 이름 입력" value="'+e(ui.cn||'')+'" data-act="inp" data-s="ui" data-f="cn" aria-label="동행 이름" autocomplete="off"><button type="button" class="chip" style="flex:0 0 auto" data-act="addcomp">추가</button></div>';
+ if(f.protocol==='Traveling')h+='<div class="lab">이동 거리 (km)</div><input type="text" inputmode="decimal" placeholder="예: 2.5" value="'+e(f.km||'')+'" data-act="inp" data-s="trip" data-f="km" aria-label="이동 거리 km">';
+ if(f.protocol!=='Incidental')h+='<div class="lab">본 새를 모두 기록했나요</div>'+chips([['1','예'],['0','아니오']],f.all?'1':'0','trip','all',false);
+ h+='</div>';
+ var m2='<div class="lab">날씨</div>'+chips(L.weather,f.weather,'trip','weather',false)+
+  '<div class="lab">기온 (℃)</div><input type="number" inputmode="decimal" step="0.5" value="'+e(f.temp)+'" data-act="inp" data-s="trip" data-f="temp" aria-label="기온">'+
+  '<div class="lab">바람</div>'+chips(L.wind,f.wind,'trip','wind',false)+
+  '<div class="lab">서식지 (여러 개 가능)</div>'+chips(L.habitat,f.habitat,'trip','habitat',true)+
+  '<div class="lab">물 상태</div>'+chips(L.water,f.water,'trip','water',false)+
+  '<div class="lab">장비</div>'+chips(L.gear,f.gear,'trip','gear',true)+
+  '<div class="lab">방해 요인</div>'+chips(L.disturb,f.disturb,'trip','disturb',true)+
+  '<div class="lab">탐조 목적</div>'+chips(L.purpose,f.purpose,'trip','purpose',false)+
+  '<div class="lab">이동 수단</div>'+chips(L.transport,f.transport,'trip','transport',false)+
+  '<div class="lab">메모</div><input type="text" value="'+e(f.notes)+'" data-act="inp" data-s="trip" data-f="notes" aria-label="메모" autocomplete="off">';
+ h+=moreBox('trip','날씨 · 서식지 · 장비 · 방해 요인 · 메모',m2);
+ if(ui.editNew){
+  h+='<button type="button" class="btn pri" data-act="start">탐조 시작</button>';
+  if(S.trips.length)h+='<button type="button" class="btn" data-act="cancelnew">취소</button>';
+ }else{
+  h+='<div class="btns"><button type="button" class="btn pri half" data-act="endnow">'+(f.end?'종료 시각 다시 지정':'탐조 종료')+'</button><button type="button" class="btn half" data-act="rec">기록하러 가기</button></div>';
+  h+='<button type="button" class="btn" data-act="newtrip">새 탐조 시작</button>';
+ }
+ if(S.trips.length){
+  h+='<h2>지난 탐조</h2>';
+  S.trips.slice().sort(function(a,b){return (b.date+b.start).localeCompare(a.date+a.start)}).forEach(function(r){
+   h+='<button type="button" class="li" data-act="open" data-id="'+r.id+'"'+(r.id===S.sel&&!ui.editNew?' aria-current="true"':'')+'><span><span class="a">'+e(tripLabel(r))+'</span>'+(r.id===S.sel&&!ui.editNew?'<span class="tag">열림</span>':'')+(r.exp?'<span class="tag">내보냄</span>':'')+'</span><span class="z">'+e(sumOf(r))+'</span></button>'});
+  if(!ui.editNew&&t){
+   h+=ui.delTrip===t.id?'<button type="button" class="btn dng" data-act="deltrip2">이 탐조와 기록을 지우기 (되돌릴 수 없음)</button>':'<button type="button" class="btn dng" data-act="deltrip">열려 있는 탐조 지우기</button>'}
+ }
+ return h}
+/* ---------- record tab ---------- */
+function resHtml(){
+ var t=curTrip(),q=ui.q.trim(),list,h='';
+ var cnt={};tripObs(t.id).forEach(function(o){cnt[o.ko]=o});
+ if(q){
+  var ql=q.toLowerCase(),jam=/^[ㄱ-ㅎ]+$/.test(q);
+  list=S.species.filter(function(s){return s.ko.indexOf(q)>=0||(s.en&&s.en.toLowerCase().indexOf(ql)>=0)||(s.sci&&s.sci.toLowerCase().indexOf(ql)>=0)||(s.fam&&(s.fam+'과').indexOf(q)>=0)||(jam&&cho(s.ko).indexOf(q)>=0)}).slice(0,80);
+ }else{
+  var f={};S.obs.forEach(function(o){f[o.ko]=(f[o.ko]||0)+1});
+  list=S.species.slice().sort(function(a,b){return (f[b.ko]||0)-(f[a.ko]||0)||a.ko.localeCompare(b.ko)}).slice(0,12);
+  h+='<div class="lab" style="margin-top:14px">'+(Object.keys(f).length?'자주 기록한 종':'이름, 초성(ㅈㅂ), 영문명으로 검색하세요')+'</div>';
+ }
+ h+='<div class="sp-grid">'+list.map(function(s){var o=cnt[s.ko];return '<button type="button" class="sp" data-act="pick" data-ko="'+e(s.ko)+'"><span class="n">'+e(s.ko)+'</span><span class="s">'+e(s.en||'')+'</span>'+(o?'<span class="b">'+e(o.count)+'</span>':'')+'</button>'}).join('')+'</div>';
+ if(q&&/[가-힣]/.test(q)&&!S.species.some(function(s){return s.ko===q}))h+='<button type="button" class="btn" data-act="newsp" data-ko="'+e(q)+'">‘'+e(q)+'’ 새 종으로 기록</button>';
+ if(q&&!list.length&&!/[가-힣]/.test(q))h+='<div class="mu" style="margin-top:8px">일치하는 종이 없습니다.</div>';
+ return h}
+function firstMap(){var m={};S.obs.forEach(function(o){if(m[o.ko]==null||(o.at||0)<m[o.ko])m[o.ko]=o.at||0});return m}
+function obsTags(o,fm){
+ var h='',md=o.media||[],ph=md.filter(function(x){return x.k==='photo'}).length,au=md.length-ph;
+ if(fm[o.ko]===(o.at||0))h+='<span class="tag">처음</span>';
+ if(o.heard)h+='<span class="tag">소리만</span>';
+ if(o.cert!=='확실')h+='<span class="tag w">'+e(o.cert)+'</span>';
+ if(o.check)h+='<span class="tag w">확인 필요</span>';
+ if(o.rare)h+='<span class="tag">희귀</span>';
+ if(ph)h+='<span class="tag">사진 '+ph+'</span>';
+ if(au)h+='<span class="tag">녹음 '+au+'</span>';
+ return h}
+function viewRec(){
+ var t=curTrip();
+ if(!t)return '<div class="card">먼저 탐조를 시작하세요.</div><button type="button" class="btn pri" data-act="tab" data-v="trip">탐조 탭으로</button>';
+ var l=tripObs(t.id).sort(function(a,b){return (b.at||0)-(a.at||0)}),fm=firstMap();
+ var h='<div class="srch"><input id="q" type="search" placeholder="종 검색 (이름 · 초성 ㅈㅂ · 영문명)" value="'+e(ui.q)+'" data-act="q" autocomplete="off" autocapitalize="off" aria-label="종 검색"></div><div id="res">'+resHtml()+'</div>';
+ h+='<h2>이번 탐조 기록 ('+l.length+'종)</h2>';
+ if(!l.length)h+='<div class="mu">아직 기록이 없습니다. 위에서 종을 누르세요.</div>';
+ l.forEach(function(o){h+='<button type="button" class="li" data-act="pick" data-ko="'+e(o.ko)+'"><span><span class="a">'+e(o.ko)+'</span>'+obsTags(o,fm)+'</span><span class="z">'+e(o.count)+(o.count==='X'?'':'마리')+' · '+e(o.time||'')+'</span></button>'});
+ return h}
+function mediaAdd(k,f){var d=ui.sheet&&ui.sheet.d;if(!d)return;(d.media=d.media||[]).push({k:k,t:nowSec(),f:f||''})}
+function stopRec(discard){if(ui.rec&&ui.rec.mr&&ui.rec.mr.state!=='inactive'){ui.rec.discard=!!discard;try{ui.rec.mr.stop()}catch(x){}}}
+function startRec(){
+ if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder)){toast('이 화면에서는 앱 안 녹음을 쓸 수 없습니다. 휴대폰 녹음 앱을 쓰고 ‘녹음함 표시’를 누르세요');return}
+ var d=ui.sheet.d,ko=ui.sheet.ko;d.media=d.media||[];
+ navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+  var mr=new MediaRecorder(stream),chunks=[];ui.rec={mr:mr,d:d,ko:ko,discard:false};
+  mr.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data)};
+  mr.onstop=function(){
+   stream.getTracks().forEach(function(x){x.stop()});var rc=ui.rec;ui.rec=null;
+   if(!rc||rc.discard||!chunks.length){render();return}
+   var ty=mr.mimeType||'',ext=/mp4|aac/.test(ty)?'mp4':'webm',name=fileStamp()+'_'+rc.ko+'_녹음.'+ext,blob=new Blob(chunks,{type:ty});
+   var add=function(f){rc.d.media.push({k:'audio',t:nowSec(),f:f});save();render()};
+   saveFile(name,blob).then(function(){add(name);toast('녹음을 저장했습니다')}).catch(function(){add('');toast('저장하지 않아 시각만 기록했습니다')})};
+  mr.start();render();
+ }).catch(function(){toast('마이크를 쓸 수 없습니다. 휴대폰 녹음 앱을 쓰고 ‘녹음함 표시’를 누르세요')})}
+function mediaHtml(d){
+ var m=d.media||[],h='<div class="lab">사진·녹음</div><div class="mu" style="margin-bottom:6px">휴대폰 카메라나 녹음 앱으로 찍은 뒤, 아래 버튼으로 찍은 시각을 남기세요. 내보내기 탭의 시각표로 휴대폰의 사진과 녹음을 시각으로 찾아 맞출 수 있습니다.</div>';
+ h+='<div class="btns" style="margin-top:8px"><button type="button" class="chip half" data-act="mark" data-v="photo">사진 찍음 표시</button><button type="button" class="chip half" data-act="mark" data-v="audio">녹음함 표시</button></div>';
+ m.forEach(function(x,i){h+='<div class="li" style="cursor:default;min-height:44px;margin:6px 0 0"><span>'+(x.k==='photo'?'사진':'녹음')+' '+e(x.t)+'<div class="mu">'+(x.f?e(x.f):'시각만 기록')+'</div></span><button type="button" class="chip sm" data-act="delmedia" data-v="'+i+'">삭제</button></div>'});
+ return h}
+function obsSheet(){
+ var s=ui.sheet,d=s.d,sp=spOf(s.ko);
+ var h='<div class="row"><h3>'+e(s.ko)+'</h3><span class="mu">'+e(sp.en||'')+'</span></div>'+spInfo(sp);
+ h+='<div class="lab">개체수</div><div class="inl"><input id="cntin" type="number" inputmode="numeric" min="1" step="1" placeholder="마리 수" style="font-size:22px;font-weight:700" value="'+(typeof d.count==='number'?d.count:'')+'" data-act="cnt" aria-label="개체수"><button type="button" class="chip" aria-pressed="'+(d.count==='X')+'" data-act="chip" data-s="obs" data-f="count" data-v="X" data-m="0" data-n="0">수 못 셈 (X)</button></div>';
+ h+='<div class="lab">행동</div>'+chips(S.lists.behavior,d.beh,'obs','beh',true);
+ h+='<div class="lab">확실도</div>'+chips(CERT,d.cert,'obs','cert',false);
+ h+='<div class="chips" style="margin-top:12px"><button type="button" class="chip" aria-pressed="'+!!d.heard+'" data-act="flag" data-f="heard">소리만 들음</button><button type="button" class="chip" aria-pressed="'+!!d.check+'" data-act="flag" data-f="check">확인 필요</button></div>';
+ h+=moreBox('obs','희귀 표시 · 메모 · 사진·녹음','<div class="chips"><button type="button" class="chip" aria-pressed="'+!!d.rare+'" data-act="flag" data-f="rare">희귀종</button></div><div class="lab">메모</div><input type="text" value="'+e(d.note)+'" data-act="inp" data-s="obs" data-f="note" aria-label="메모" autocomplete="off">'+mediaHtml(d));
+ if(s.err)h+='<div class="warn" role="alert">'+e(s.err)+'</div>';
+ h+='<button type="button" class="btn pri" data-act="saveobs">저장</button><div class="btns"><button type="button" class="btn half" data-act="close">닫기</button>';
+ if(s.id)h+='<button type="button" class="btn dng half" data-act="'+(s.cd?'delobs2':'delobs')+'">'+(s.cd?'정말 삭제':'삭제')+'</button>';
+ return h+'</div>'}
+
+/* ---------- features tab ---------- */
+function featOf(id){return S.feats.find(function(x){return x.obs===id})}
+function featSummary(f){if(!f)return '';var r=[];ALLC.concat(FG).forEach(function(g){if(f[g[0]]&&f[g[0]].length)r.push(g[1].replace(' 색','').replace(' 비교','')+' '+f[g[0]].join('·'))});if(f.confuse)r.push('헷갈림 '+f.confuse);return r.join(' / ')}
+function viewFeat(){
+ var t=curTrip();
+ if(!t)return '<div class="card">먼저 탐조를 시작하세요.</div><button type="button" class="btn pri" data-act="tab" data-v="trip">탐조 탭으로</button>';
+ var l=tripObs(t.id);
+ var h='<div class="mu" style="margin-bottom:10px">구분이 어려웠던 종만 고릅니다. 기록하지 않아도 됩니다.</div>';
+ if(!l.length)return h+'<div class="card">이 탐조에 기록한 종이 없습니다. 기록 탭에서 먼저 종을 추가하세요.</div>';
+ l.forEach(function(o){var f=featOf(o.id),sm=featSummary(f);h+='<button type="button" class="li" data-act="feat" data-id="'+o.id+'"><span><span class="a">'+e(o.ko)+'</span>'+(sm?'<span class="tag">입력함</span>':'')+(sm?'<div class="mu">'+e(sm)+'</div>':'')+'</span><span class="z">열기</span></button>'});
+ return h}
+function splitPane(list,d,single){
+ var act=ui.sheet.pal,q0=list.find(function(x){return x[0]===act})||list[0],c=d[q0[0]]||[];
+ var left=list.map(function(q){return '<button type="button" class="pt" aria-pressed="'+(q[0]===q0[0])+'" data-act="part" data-v="'+q[0]+'"><span class="a">'+q[1]+'</span><span class="dots">'+swDots(d[q[0]])+'</span></button>'}).join('');
+ var right='<div class="row"><b>'+e(q0[1])+'</b><button type="button" class="chip sm" data-act="palclear">지우기</button></div><div class="mu">'+(c.length?e(c.join(' · ')):'색을 고르세요')+' ('+(single?'하나만':'최대 3개')+')</div><div class="pgrid3">'+PAL.map(function(x){var on=c.indexOf(x[0])>=0;return '<button type="button" class="pbtn sm" aria-pressed="'+on+'" data-act="palpick" data-v="'+e(x[0])+'"><span class="sw" style="background:'+x[1]+'"></span><span>'+e(x[0])+'</span></button>'}).join('')+'</div>';
+ return '<div class="split"><div>'+left+'</div><div>'+right+'</div></div>'}
+function featSheet(){
+ var s=ui.sheet,d=s.d,ft=s.ft||'color',h='<div class="row"><h3>'+e(s.ko)+' 특징</h3></div>'+spInfo(spOf(s.ko));
+ h+='<div style="position:sticky;top:0;z-index:3;background:var(--bg);padding:8px 0 4px"><div class="card" data-act="zoom" role="button" tabindex="0" aria-label="그림 확대" style="padding:6px;margin:0;position:relative;cursor:zoom-in">'+birdSvg(d)+'<span class="tag" style="position:absolute;right:8px;top:8px;margin:0">누르면 확대</span></div></div>';
+ h+='<div class="btns" style="margin:8px 0 10px">'+[['color','색'],['pat','무늬'],['etc','그 밖']].map(function(t){return '<button type="button" class="chip half" style="flex:1" aria-pressed="'+(ft===t[0])+'" data-act="ftab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div>';
+ if(ft==='color'){h+=splitPane(PARTS,d,false)}
+ else if(ft==='pat'){h+=splitPane(PATS,d,true)}
+ else{
+  FG.forEach(function(g){h+='<div class="lab">'+g[1]+'</div>'+chips(S.lists[g[2]],d[g[0]],'feat',g[0],true)});
+  h+='<div class="lab">헷갈린 종</div><input type="text" list="splist" value="'+e(d.confuse)+'" data-act="inp" data-s="feat" data-f="confuse" aria-label="헷갈린 종" autocomplete="off"><div id="cfl">'+cfLink(d.confuse)+'</div><datalist id="splist">'+S.species.map(function(x){return '<option value="'+e(x.ko)+'">'}).join('')+'</datalist>';
+  h+='<div class="lab">메모</div><input type="text" value="'+e(d.note)+'" data-act="inp" data-s="feat" data-f="note" aria-label="메모" autocomplete="off">'}
+ return h+'<button type="button" class="btn pri" data-act="savefeat">저장</button><button type="button" class="btn" data-act="close">닫기</button>'}
+
+/* ---------- export ---------- */
+function ebDate(s){var p=s.split('-');return p[1]+'/'+p[2]+'/'+p[0]}
+function san(s){return String(s==null?'':s).replace(/["\r\n]+/g,' ').replace(/,/g,';').trim()}
+function buildCsv(ids,lvl){
+ var warn=[],rows=[];
+ ids.forEach(function(id){
+  var t=S.trips.find(function(x){return x.id===id});if(!t)return;
+   var pl=S.places.find(function(p){return p.id===t.place}),tag=t.date+' '+(pl?pl.name:'장소 미정');
+   var la=pl&&pl.lat!=null?pl.lat:(t.gps?t.gps.lat:''),lo=pl&&pl.lon!=null?pl.lon:(t.gps?t.gps.lon:'');
+   if(!pl)warn.push(tag+': 장소가 없습니다.');
+   if(la===''||lo==='')warn.push(tag+': 좌표가 없어서 eBird에서 가져온 뒤 지도에서 장소를 골라야 합니다.');
+   var dur=mins(t.start,t.end);
+  if(t.protocol!=='Incidental'&&dur==null)warn.push(tag+': 종료 시각이 없어 소요 시간이 비어 있습니다.');
+  if(t.protocol==='Traveling'&&!t.km)warn.push(tag+': 이동 거리가 없습니다.');
+   var hasT=t.temp!==''&&t.temp!=null;
+   var cm=san([t.purpose&&'목적 '+t.purpose,t.habitat&&t.habitat.length&&'서식지 '+t.habitat.join('/'),t.weather&&'날씨 '+t.weather,hasT&&'기온 '+t.temp+'℃',t.wind&&'바람 '+t.wind,t.water&&'물 상태 '+t.water,t.comp&&'동행 '+t.comp,t.transport&&'이동 '+t.transport,t.gear&&t.gear.length&&'장비 '+t.gear.join('/'),t.disturb&&t.disturb.length&&'방해 '+t.disturb.join('/'),t.notes].filter(Boolean).join('; '));
+  var list=tripObs(id).filter(function(o){return lvl==='all'||(lvl==='sure'&&o.cert==='확실')||(lvl==='est'&&o.cert!=='미확인')});
+  var skipped=tripObs(id).length-list.length;
+  if(skipped)warn.push(tag+': 확실도 기준에 맞지 않아 '+skipped+'종을 뺐습니다.');
+  if(!list.length)warn.push(tag+': 내보낼 기록이 없습니다.');
+  list.forEach(function(o){
+   var sp=spOf(o.ko),sc=(sp.sci||'').split(' ');
+   if(!sp.en&&!sp.sci)warn.push(tag+': '+o.ko+'의 영문명·학명이 없어서 가져온 뒤 종을 직접 골라야 합니다.');
+   var md=o.media||[],phn=md.filter(function(x){return x.k==='photo'}).length,aun=md.length-phn;
+    var cmt=san([o.beh.join('/'),o.heard?'소리만 들음':'',o.cert==='추정'?'추정':'',o.check?'확인 필요':'',o.rare?'희귀':'',phn?'사진 '+phn:'',aun?'녹음 '+aun:'',o.note].filter(Boolean).join('; '));
+   rows.push([san(sp.en||(!sp.sci?o.ko:'')),sp.en?'':(sc[0]||''),sp.en?'':(sc[1]||''),o.count,cmt,san(pl?pl.name:''),la,lo,ebDate(t.date),t.start||'',S.set.state||'',S.set.country||'',t.protocol,t.observers||1,dur==null||t.protocol==='Incidental'?'':dur,t.protocol==='Incidental'?'N':(t.all?'Y':'N'),t.protocol==='Traveling'&&t.km?(t.km*0.621371).toFixed(2):'','',cm].join(','));
+  });
+ });
+ var seen={};warn=warn.filter(function(w){if(seen[w])return false;seen[w]=1;return true});
+ return {text:rows.join('\n'),n:rows.length,warn:warn}}
+function viewExp(){
+ if(!ui.ex){ui.ex={};S.trips.forEach(function(t){if(!t.exp)ui.ex[t.id]=true})}
+ var h='<h2 style="margin-top:4px">eBird로 올릴 탐조</h2>';
+ if(!S.trips.length)h+='<div class="mu">기록한 탐조가 없습니다.</div>';
+ S.trips.slice().sort(function(a,b){return (b.date+b.start).localeCompare(a.date+a.start)}).forEach(function(t){
+  h+='<label class="li" style="cursor:pointer"><span><input type="checkbox" style="width:22px;height:22px;vertical-align:middle;margin-right:10px" data-act="ex" data-id="'+t.id+'"'+(ui.ex[t.id]?' checked':'')+'><span class="a">'+e(tripLabel(t))+'</span>'+(t.exp?'<span class="tag">내보냄 '+e(t.exp.slice(5))+'</span>':'')+'</span><span class="z">'+e(sumOf(t))+'</span></label>'});
+ h+='<div class="lab" style="margin-top:14px">올릴 확실도</div>'+chips([['sure','확실만'],['est','확실 + 추정'],['all','전부']],ui.lvl,'ui','lvl',false);
+ h+='<button type="button" class="btn pri" data-act="mkcsv">CSV 만들기</button><button type="button" class="btn" data-act="mlog">사진·녹음 시각표 저장 (CSV)</button><div class="mu" style="margin-top:6px">시각표는 사진과 녹음을 남긴 시각과 종, 장소를 적은 표입니다. 휴대폰에 있는 사진과 녹음을 시각으로 찾아 맞출 때 씁니다.</div>';
+ if(ui.csv){
+  var c=ui.csv;
+  h+=c.warn.length?'<div class="warn"><b>확인할 점 '+c.warn.length+'건</b><ul>'+c.warn.map(function(w){return '<li>'+e(w)+'</li>'}).join('')+'</ul></div>':'<div class="ok">확인할 점이 없습니다.</div>';
+  if(c.n){
+   h+='<div class="mu">'+c.n+'줄 · 맨 위 줄이 첫 관찰 기록이어야 하므로 머리글 줄은 넣지 않았습니다.</div><pre>'+e(c.text.split('\n').slice(0,6).join('\n'))+(c.n>6?'\n…':'')+'</pre>';
+   h+='<div class="btns"><button type="button" class="btn pri half" data-act="dlcsv">CSV 저장</button><button type="button" class="btn half" data-act="cpcsv">복사</button></div>';
+   h+='<div class="mu" style="margin-top:8px">저장하거나 복사하면 선택한 탐조에 ‘내보냄’ 표시가 붙습니다. 처음 한 번은 열 순서가 eBird 도움말의 레코드 형식 견본과 같은지 비교해 보세요.</div>';
+  }
+ }
+ h+='<h2>올리는 방법</h2><div class="card mu">eBird 사이트에서 제출 → 데이터 가져오기 → 레코드 형식을 고르고 이 CSV를 올립니다. 사진과 녹음은 가져온 뒤 각 체크리스트에서 따로 올려야 합니다. 종 이름이 맞지 않으면 가져온 뒤 ‘종 고치기’ 단계에서 고릅니다.</div>';
+ h+='<h2>백업</h2><div class="mu" style="margin-bottom:6px">기록은 이 기기의 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 백업하세요.'+(S.backup?' 마지막 백업 '+e(S.backup):' 아직 백업하지 않았습니다.')+'</div>';
+ h+='<button type="button" class="btn" data-act="bak">백업 파일 저장</button>';
+ h+='<h2>불러오기</h2><div class="mu" style="margin-bottom:6px">집에서 편집할 때 쓰세요. 합치기는 지금 기록을 그대로 두고 없는 탐조와 기록만 더하고, 바꾸기는 지금 기록을 지우고 불러온 기록으로 바꿉니다. 같은 탐조가 양쪽에 있으면 지금 기록을 남깁니다.</div>';
+ if(ui.ld){h+='<div class="card"><b>'+e(ui.ld.src)+'</b><div class="mu">'+e(ldInfo(ui.ld.data))+'</div><div class="btns"><button type="button" class="btn pri half" data-act="ldmerge">합치기</button><button type="button" class="btn half'+(ui.ld.cr?' dng':'')+'" data-act="ldreplace">'+(ui.ld.cr?'정말 바꾸기':'바꾸기')+'</button></div><button type="button" class="btn" data-act="ldcancel">취소</button></div>'}
+ else h+='<div class="btns"><button type="button" class="btn half" data-act="ldauto">자동 저장본 불러오기</button><label class="btn half" style="display:flex;align-items:center;justify-content:center;cursor:pointer">백업 파일 고르기<input type="file" accept=".json,application/json" hidden data-act="ldfile"></label></div>';
+ h+='<div class="lab" style="margin-top:14px">백업 불러오기 (파일 내용을 붙여넣기)</div><textarea data-act="inp" data-s="ui" data-f="restore" aria-label="백업 내용">'+e(ui.restore)+'</textarea>';
+ h+=ui.rc?'<button type="button" class="btn dng" data-act="restore2">현재 기록을 지우고 불러오기</button>':'<button type="button" class="btn" data-act="restore">불러오기</button>';
+ return h}
+
+/* ---------- settings ---------- */
+function viewSet(){
+ var h='<div class="card"><div class="lab">eBird 내보내기 기본값</div><div class="inl"><div><div class="mu">국가 코드</div><input type="text" value="'+e(S.set.country)+'" data-act="inp" data-s="set" data-f="country" maxlength="2" aria-label="국가 코드"></div><div><div class="mu">지역 코드</div><input type="text" value="'+e(S.set.state)+'" data-act="inp" data-s="set" data-f="state" maxlength="3" aria-label="지역 코드"></div></div><div class="mu" style="margin-top:6px">지역 코드는 eBird 도움말의 지역 코드표에서 확인하세요. 국가는 2글자, 지역은 1~3글자여야 합니다.</div></div>';
+ h+='<h2>장소 ('+S.places.length+')</h2>';
+ S.places.forEach(function(p){h+='<div class="li" style="cursor:default"><span><span class="a">'+e(p.name)+'</span><div class="mu">'+(p.lat!=null?e(p.lat)+', '+e(p.lon):'좌표 없음')+'</div></span><button type="button" class="chip sm" data-act="delplace" data-id="'+p.id+'">삭제</button></div>'});
+ h+='<div class="card"><div class="lab">장소 추가</div><input type="text" placeholder="장소 이름" value="'+e(ui.pf.name)+'" data-act="inp" data-s="pf" data-f="name" aria-label="장소 이름" autocomplete="off"><div class="inl" style="margin-top:8px"><input type="text" inputmode="decimal" placeholder="위도" value="'+e(ui.pf.lat)+'" data-act="inp" data-s="pf" data-f="lat" aria-label="위도"><input type="text" inputmode="decimal" placeholder="경도" value="'+e(ui.pf.lon)+'" data-act="inp" data-s="pf" data-f="lon" aria-label="경도"></div><button type="button" class="btn pri" data-act="addplace">추가</button></div>';
+ h+='<h2>종 ('+S.species.length+')</h2><div class="card"><div class="lab">종 목록 정보</div><div class="mu">한국 조류 목록(2025 Bird Korea)을 바탕으로 합니다. '+S.species.filter(function(s){return s.code}).length+'종에 eBird 링크가 있고, '+S.species.filter(function(s){return s.en||s.sci}).length+'종에 영문명 또는 학명이 있습니다. 영문명과 eBird 코드는 eBird/Clements v2025 분류표와 대조해 맞춘 것입니다. 목록에 없는 종은 아래에서 직접 추가합니다.</div>';
+ h+='<div class="lab">붙여넣어서 불러오기</div><div class="mu" style="margin-bottom:6px">한글 이름, 학명, 영문명 순서로(탭이나 쉼표로 구분) 한 줄에 한 종씩 붙여넣으세요. 한글 이름이 같은 종은 학명과 영문명을 바꾸고, 없는 종은 새로 추가합니다.</div><textarea data-act="inp" data-s="ui" data-f="imp" aria-label="종 목록 붙여넣기">'+e(ui.imp)+'</textarea><button type="button" class="btn pri" data-act="imp">불러오기</button></div>';
+ h+='<div class="card"><div class="lab">종 하나 추가</div><input type="text" placeholder="한글 이름" value="'+e(ui.sf.ko)+'" data-act="inp" data-s="sf" data-f="ko" aria-label="한글 이름" autocomplete="off"><input type="text" placeholder="영문명 (선택)" style="margin-top:8px" value="'+e(ui.sf.en)+'" data-act="inp" data-s="sf" data-f="en" aria-label="영문명" autocomplete="off"><input type="text" placeholder="학명 (선택)" style="margin-top:8px" value="'+e(ui.sf.sci)+'" data-act="inp" data-s="sf" data-f="sci" aria-label="학명" autocomplete="off"><button type="button" class="btn" data-act="addsp">추가</button></div>';
+ h+='<h2>선택지 편집</h2><div class="card">'+chips(Object.keys(LBL).filter(function(k){return k!=='color'&&k!=='leg'&&k!=='pattern'&&k!=='comp'}).map(function(k){return [k,LBL[k]]}),ui.le,'ui','le',false)+'<div class="lab" style="margin-top:12px">한 줄에 하나씩 적습니다</div><textarea data-act="inp" data-s="ui" data-f="leText" aria-label="선택지">'+e(ui.leText==null?S.lists[ui.le].join('\n'):ui.leText)+'</textarea><div class="btns"><button type="button" class="btn half" data-act="lereset">기본값으로</button><button type="button" class="btn pri half" data-act="lesave">저장</button></div></div>';
+ h+='<h2>신호가 없을 때</h2><div class="card mu">이 화면을 신호가 있는 곳에서 한 번 열어 두면, 이후 입력한 기록은 기기에 저장됩니다. 신호가 없는 곳에서 화면을 처음 여는 것이나 새로 고침은 되지 않을 수 있으니, 출발 전에 비행기 모드로 시험해 보세요.</div>';
+ return h}
+
+/* ---------- render ---------- */
+function palHtml(){
+ var s=ui.sheet,k=s.pal,q=ALLC.find(function(x){return x[0]===k}),c=s.d[k]||[];
+ return '<div class="scrim" style="z-index:25" data-act="palscrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="'+e(q[1])+' 색 고르기"><div class="row"><h3>'+e(q[1])+' 색</h3><span class="mu">'+(isPat(k)?'하나만 고릅니다':'최대 3개')+' · '+c.length+'개 선택</span></div><div class="pgrid">'+PAL.map(function(x){var on=c.indexOf(x[0])>=0;return '<button type="button" class="pbtn" aria-pressed="'+on+'" data-act="palpick" data-v="'+e(x[0])+'"><span class="sw" style="background:'+x[1]+'"></span><span>'+e(x[0])+'</span></button>'}).join('')+'</div><div class="btns"><button type="button" class="btn half" data-act="palclear">지우기</button><button type="button" class="btn pri half" data-act="palclose">완료</button></div></div></div>'}
+function zoomHtml(){
+ var s=ui.sheet,d=s.d,k=s.pal,q=ALLC.find(function(x){return x[0]===k}),c=k?(d[k]||[]):[];
+ var X='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+ return '<div id="zoomv" style="position:fixed;inset:0;z-index:25;background:var(--bg);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px calc(12px + env(safe-area-inset-bottom,0px))" role="dialog" aria-modal="true" aria-label="그림 확대">'+
+ '<div class="row" style="align-items:center;padding:4px 0"><b style="font-size:18px">'+e(s.ko)+'</b><button type="button" class="chip" style="min-width:52px;display:flex;align-items:center;justify-content:center" data-act="zoomclose" aria-label="닫기">'+X+'</button></div>'+
+ '<div style="flex:1;display:flex;align-items:center;min-height:0"><div style="width:100%">'+birdSvg(d,true)+'</div></div>'+
+ '<div class="row" style="align-items:center;margin:6px 0"><span class="mu">'+(q?e(q[1])+' · '+(c.length?e(c.join(', ')):'색을 고르세요'):'그림의 부위를 누르세요')+'</span><button type="button" class="chip sm" data-act="palclear">지우기</button></div>'+
+ '<div id="zstrip" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px">'+PAL.map(function(x){var on=c.indexOf(x[0])>=0;return '<button type="button" class="pbtn sm" style="flex:0 0 68px;min-height:74px" aria-pressed="'+on+'" data-act="palpick" data-v="'+e(x[0])+'"><span class="sw" style="background:'+x[1]+'"></span><span>'+e(x[0])+'</span></button>'}).join('')+'</div></div>'}
+function sheetHtml(){var s=ui.sheet;return '<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">'+(s.type==='obs'?obsSheet():featSheet())+'</div></div>'+(s.type==='feat'&&s.zoom?zoomHtml():'')}
+function render(){
+ var zs0=document.getElementById('zstrip'),zl=zs0?zs0.scrollLeft:0;
+ var mainEl=app.querySelector('main'),mt=mainEl?mainEl.scrollTop:0;if(ui.resetScroll){mt=0;ui.resetScroll=false}
+ var sc=sheetEl.firstElementChild&&sheetEl.firstElementChild.firstElementChild?sheetEl.firstElementChild.firstElementChild.scrollTop:0;
+ var v={trip:viewTrip,rec:viewRec,feat:viewFeat,exp:viewExp,set:viewSet}[ui.tab]();
+ app.innerHTML=head()+'<main>'+v+'</main>'+tabbar();
+ sheetEl.innerHTML=ui.sheet?sheetHtml():'';
+ var zs1=document.getElementById('zstrip');if(zs1)zs1.scrollLeft=zl;
+ if(ui.sheet&&ui.sheet.fresh){ui.sheet.fresh=false;var ci=document.getElementById('cntin');if(ci)ci.focus()}
+ document.body.style.overflow=ui.sheet?'hidden':'';
+ if(ui.sheet&&sheetEl.firstElementChild)sheetEl.firstElementChild.firstElementChild.scrollTop=sc;
+ var m2=app.querySelector('main');if(m2)m2.scrollTop=mt}
+
+/* ---------- actions ---------- */
+function openObs(ko){
+ var t=curTrip(),ex=tripObs(t.id).find(function(o){return o.ko===ko});
+ ui.sheet={type:'obs',ko:ko,id:ex?ex.id:null,d:ex?{count:ex.count,beh:ex.beh.slice(),cert:ex.cert,note:ex.note||'',heard:!!ex.heard,check:!!ex.check,rare:!!ex.rare,media:(ex.media||[]).slice()}:{count:null,beh:[],cert:'확실',note:'',heard:false,check:false,rare:false,media:[]},err:'',fresh:true}}
+function copyText(txt){
+ return (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).catch(function(){
+  var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(x){}document.body.removeChild(ta);if(!ok)throw new Error('copy')})}
+function saveFile(name,data){
+ if(!(window.claude&&window.claude.use))return Promise.reject(new Error('unavailable'));
+ return window.claude.use('downloads').then(function(d){if(!d)throw new Error('unavailable');return d.save({filename:name,data:data})})}
+function markExported(ids){var d=todayStr();ids.forEach(function(id){var t=S.trips.find(function(x){return x.id===id});if(t)t.exp=d});save()}
+var fmtDT=function(ms){var d=new Date(ms);return pad(d.getMonth()+1)+'/'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
+function ldInfo(d){return (d.mt?fmtDT(d.mt)+' 저장 · ':'')+'탐조 '+(d.trips||[]).length+'개 · 종 기록 '+(d.obs||[]).length+'개 · 특징 '+(d.feats||[]).length+'개'}
+function mergeData(d){
+ var ids=function(a){var m={};a.forEach(function(x){m[x.id]=1});return m};
+ var ti=ids(S.trips),oi=ids(S.obs),fi=ids(S.feats),n={t:0,o:0,f:0},pmap={};
+ (d.places||[]).forEach(function(p){var ex=S.places.find(function(q){return q.name===p.name});if(ex){pmap[p.id]=ex.id;if(ex.lat==null&&p.lat!=null){ex.lat=p.lat;ex.lon=p.lon}}else{S.places.push(p);pmap[p.id]=p.id}});
+ (d.trips||[]).forEach(function(t){if(!ti[t.id]){t.place=pmap[t.place]||t.place;S.trips.push(t);n.t++}});
+ (d.obs||[]).forEach(function(o){if(!oi[o.id]){S.obs.push(o);n.o++}});
+ (d.feats||[]).forEach(function(f){if(!fi[f.id]){S.feats.push(f);n.f++}});
+ (d.species||[]).forEach(function(x){if(!S.species.some(function(q){return q.ko===x.ko}))S.species.push(x)});
+ S=mergeBase(S);
+ if(!S.trips.some(function(t){return t.id===S.sel}))S.sel=S.trips.length?S.trips[S.trips.length-1].id:null;
+ ui.editNew=false;ui.draft=null;
+ return n}
+function selIds(){return Object.keys(ui.ex||{}).filter(function(k){return ui.ex[k]})}
+function autoBackup(){
+ var snap=JSON.stringify(S),mt=S.mt,name='birdlog-backup-'+todayStr().replace(/-/g,'')+'-'+nowStr().replace(':','')+'.json';
+ function done(msg){S.backup=todayStr();S.bk=mt||Date.now();persist();render();toast(msg)}
+ saveFile(name,snap).then(function(){done('백업을 휴대폰에 저장했습니다')}).catch(function(er){
+  if(er&&er.code==='declined'){toast('백업을 건너뛰었습니다. 위의 지금 백업 버튼으로 다시 저장할 수 있습니다');return}
+  copyText(snap).then(function(){done('파일 저장이 안 되어 내용을 복사했습니다. 메모 앱에 붙여넣어 보관하세요')}).catch(function(){toast('백업할 수 없습니다')})})}
+
+document.addEventListener('click',function(ev){
+ var el=ev.target.closest('[data-act]');if(!el)return;
+ var a=el.getAttribute('data-act');
+ if(a==='scrim'){if(ev.target!==el)return;stopRec(true);ui.sheet=null;render();return}
+ if(a==='palscrim'){if(ev.target!==el)return;ui.sheet.pal=null;render();return}
+ if(a==='q'||a==='inp'||a==='cnt'||a==='ex'||a==='photo'||a==='ldfile')return;
+ var id=el.getAttribute('data-id'),v=el.getAttribute('data-v');
+ if(a==='tab'){stopRec(true);ui.tab=v;ui.sheet=null;ui.resetScroll=true}
+ else if(a==='chip'){
+  var s=el.getAttribute('data-s'),f=el.getAttribute('data-f'),m=el.getAttribute('data-m')==='1',n=el.getAttribute('data-n')==='1';
+  if(s==='ui'){ui[f]=(f==='ini'&&ui.ini===v)?'':v;if(f==='le')ui.leText=null;if(f==='lvl')ui.csv=null}
+  else{
+   var o=target(s);if(!o)return;
+   if(m){var arr=o[f]=o[f]||[],i=arr.indexOf(v);if(i>=0)arr.splice(i,1);else arr.push(v)}
+   else{var nv=n&&v!=='X'?Number(v):v;if(f==='all')nv=(v==='1');
+    if(f==='count'){o.count=(o.count===nv?null:nv)}
+    else if(f==='protocol'||f==='observers'||f==='cert'||f==='all')o[f]=nv;
+    else o[f]=(o[f]===nv?(f==='km'?null:''):nv);
+    if(f==='protocol'&&nv==='Incidental')o.all=false;
+    if(f==='protocol'&&nv!=='Traveling')o.km=null}
+   afterSet(s)}
+ }
+ else if(a==='start'){var d=ui.draft;var pn0=(ui.pn||'').trim();if(pn0){var ep=S.places.find(function(q){return q.name===pn0});if(!ep){ep={id:uid(),name:pn0,lat:null,lon:null};S.places.push(ep)}d.place=ep.id;ui.pn=''}var cn0=(ui.cn||'').trim();if(cn0){d.comp=cn0;ui.cn=''}S.trips.push(d);S.sel=d.id;ui.editNew=false;ui.draft=null;save();ui.tab='rec';ui.resetScroll=true;toast('탐조를 시작했습니다')}
+ else if(a==='cancelnew'){ui.editNew=false;ui.draft=null;if(!S.sel&&S.trips.length)S.sel=S.trips[S.trips.length-1].id}
+ else if(a==='newtrip'){ui.editNew=true;ui.draft=newDraft()}
+ else if(a==='open'){S.sel=id;ui.editNew=false;ui.draft=null;ui.delTrip=null;save()}
+ else if(a==='endnow'){var t=curTrip();if(t){var first=!t.end;t.end=nowStr();save();toast('종료 시각 '+t.end);if(first)autoBackup()}}
+ else if(a==='rec'){ui.tab='rec'}
+ else if(a==='deltrip'){ui.delTrip=S.sel}
+ else if(a==='deltrip2'){var tid=S.sel;S.trips=S.trips.filter(function(t){return t.id!==tid});var ids=S.obs.filter(function(o){return o.trip===tid}).map(function(o){return o.id});S.obs=S.obs.filter(function(o){return o.trip!==tid});S.feats=S.feats.filter(function(x){return ids.indexOf(x.obs)<0});S.sel=S.trips.length?S.trips[S.trips.length-1].id:null;ui.delTrip=null;ui.ex=null;save();toast('지웠습니다')}
+ else if(a==='pick'){openObs(el.getAttribute('data-ko'))}
+ else if(a==='newsp'){var ko=el.getAttribute('data-ko');if(!S.species.some(function(s){return s.ko===ko})){S.species.push({ko:ko,en:'',sci:''});S.species.sort(function(x,y){return x.ko.localeCompare(y.ko)});save()}ui.q='';openObs(ko)}
+ else if(a==='close'){stopRec(true);ui.sheet=null}
+ else if(a==='addcomp'){var cn=(ui.cn||'').trim();if(!cn){toast('동행 이름을 적으세요')}else{var ct=target('trip');if(ct)ct.comp=cn;ui.cn='';save();toast('동행을 선택했습니다')}}
+ else if(a==='addplace2'){var pn=(ui.pn||'').trim();if(!pn){toast('장소 이름을 적으세요')}else{var ep2=S.places.find(function(q){return q.name===pn});if(!ep2){ep2={id:uid(),name:pn,lat:null,lon:null};S.places.push(ep2)}var pt=target('trip');if(pt){pt.place=ep2.id}ui.pn='';save();toast('장소를 선택했습니다')}}
+ else if(a==='ldauto'){idbGet(function(raw){var d;try{d=raw?JSON.parse(raw):null}catch(x){d=null}if(!d||!Array.isArray(d.trips)){toast('자동 저장본이 없습니다');return}ui.ld={src:'자동 저장본',data:d};render()});return}
+ else if(a==='ldmerge'){var n=mergeData(ui.ld.data);save();ui.ld=null;ui.ex=null;ui.csv=null;toast('탐조 '+n.t+'개, 종 기록 '+n.o+'개를 더했습니다')}
+ else if(a==='ldreplace'){if(!ui.ld.cr){ui.ld.cr=true}else{S=mergeBase(ui.ld.data);for(var k3 in DEF){if(!S.lists||!S.lists[k3])(S.lists=S.lists||{})[k3]=DEF[k3].slice()}S.set=S.set||{country:'KR',state:'45'};if(!S.trips.some(function(t){return t.id===S.sel}))S.sel=S.trips.length?S.trips[S.trips.length-1].id:null;ui.editNew=false;ui.draft=null;save();ui.ld=null;ui.ex=null;ui.csv=null;toast('불러온 기록으로 바꿨습니다')}}
+ else if(a==='ldcancel'){ui.ld=null}
+ else if(a==='more'){ui.more[v]=!ui.more[v]}
+ else if(a==='flag'){var fk=el.getAttribute('data-f');ui.sheet.d[fk]=!ui.sheet.d[fk]}
+ else if(a==='mark'){mediaAdd(v,'')}
+ else if(a==='delmedia'){ui.sheet.d.media.splice(+v,1)}
+ else if(a==='arec'){if(ui.rec)stopRec(false);else startRec();return}
+ else if(a==='mlog'){
+  var ids4=selIds();if(!ids4.length){toast('탐조를 하나 이상 고르세요');return render()}
+  var rows2=['날짜,시각,종,종류,파일명,장소'];
+  ids4.forEach(function(id4){var t4=S.trips.find(function(x){return x.id===id4});if(!t4)return;tripObs(id4).forEach(function(o4){(o4.media||[]).forEach(function(m4){rows2.push([t4.date,m4.t,o4.ko,m4.k==='photo'?'사진':'녹음',m4.f||'',placeName(t4)].map(san).join(','))})})});
+  if(rows2.length<2){toast('선택한 탐조에 사진·녹음 기록이 없습니다');return render()}
+  saveFile('media_log_'+todayStr().replace(/-/g,'')+'.csv','\ufeff'+rows2.join('\n')).then(function(){toast('시각표를 저장했습니다')}).catch(function(er){toast(er&&er.code==='declined'?'저장을 취소했습니다':'저장할 수 없습니다')});return}
+ else if(a==='part'){ui.sheet.pal=v;ui.sheet.ft=isPat(v)?'pat':'color'}
+
+
+ else if(a==='palpick'){var pk=ui.sheet.pal;if(pk){var arr3=ui.sheet.d[pk]=ui.sheet.d[pk]||[];
+  if(isPat(pk)){ui.sheet.d[pk]=arr3[0]===v?[]:[v]}
+  else{var pi=arr3.indexOf(v);if(pi>=0)arr3.splice(pi,1);else if(arr3.length<3)arr3.push(v);else toast('최대 3개까지 고를 수 있습니다')}}}
+ else if(a==='zoom'){ui.sheet.zoom=true}
+ else if(a==='zoomclose'){ui.sheet.zoom=false}
+ else if(a==='ftab'){ui.sheet.ft=v;var cur=ui.sheet.pal;if(v==='color'&&(!cur||isPat(cur)))ui.sheet.pal='head';else if(v==='pat'&&(!cur||!isPat(cur)))ui.sheet.pal='p_crown';else if(v==='etc')ui.sheet.pal=null}
+ else if(a==='palclear'){if(ui.sheet.pal)ui.sheet.d[ui.sheet.pal]=[]}
+ else if(a==='palclose'){ui.sheet.pal=null}
+ else if(a==='saveobs'){
+  var sh=ui.sheet,dd=sh.d,t2=curTrip();stopRec(false);
+  if(dd.count==null||dd.count===''||(typeof dd.count==='number'&&!(dd.count>0))){sh.err='개체수를 입력하세요. 수를 못 셌으면 X를 누르세요.'}
+  else{
+   var rec=sh.id&&S.obs.find(function(o){return o.id===sh.id});
+   dd.media=dd.media||[];
+   if(rec){rec.count=dd.count;rec.beh=dd.beh;rec.cert=dd.cert;rec.note=dd.note;rec.heard=dd.heard;rec.check=dd.check;rec.rare=dd.rare;rec.media=dd.media}
+   else S.obs.push({id:uid(),trip:t2.id,ko:sh.ko,count:dd.count,beh:dd.beh,cert:dd.cert,note:dd.note,heard:dd.heard,check:dd.check,rare:dd.rare,media:dd.media,time:nowStr(),at:Date.now()});
+   save();ui.sheet=null;ui.q='';toast(sh.ko+' 저장')}
+ }
+ else if(a==='delobs'){ui.sheet.cd=true}
+ else if(a==='delobs2'){var oid=ui.sheet.id;S.obs=S.obs.filter(function(o){return o.id!==oid});S.feats=S.feats.filter(function(x){return x.obs!==oid});save();ui.sheet=null;toast('삭제했습니다')}
+ else if(a==='feat'){
+  var ob=S.obs.find(function(o){return o.id===id}),ft=featOf(id),dft={confuse:'',note:''};ALLC.concat(FG).forEach(function(g){dft[g[0]]=ft&&ft[g[0]]?ft[g[0]].slice():[]});if(ft){dft.confuse=ft.confuse||'';dft.note=ft.note||''}
+  ui.sheet={type:'feat',ko:ob.ko,obs:id,d:dft,pal:'head',ft:'color'}}
+ else if(a==='savefeat'){var sh2=ui.sheet,ex2=featOf(sh2.obs);if(ex2){Object.assign(ex2,sh2.d)}else S.feats.push(Object.assign({id:uid(),obs:sh2.obs},sh2.d));save();ui.sheet=null;toast('특징 저장')}
+ else if(a==='mkcsv'){var ids2=selIds();if(!ids2.length){toast('탐조를 하나 이상 고르세요')}else ui.csv=buildCsv(ids2,ui.lvl)}
+ else if(a==='dlcsv'||a==='cpcsv'){
+  var c=ui.csv,ids3=selIds(),dn='ebird_'+todayStr().replace(/-/g,'')+'.csv';
+  if(a==='dlcsv')saveFile(dn,c.text).then(function(){markExported(ids3);ui.csv=null;ui.ex=null;render();toast('CSV를 저장했습니다')}).catch(function(er){toast(er&&er.code==='declined'?'저장을 취소했습니다':'저장할 수 없습니다. 복사를 사용하세요')});
+  else copyText(c.text).then(function(){markExported(ids3);ui.csv=null;ui.ex=null;render();toast('복사했습니다')}).catch(function(){toast('복사할 수 없습니다')});
+  return}
+ else if(a==='bak'){autoBackup();return}
+ else if(a==='restore'){try{var j=JSON.parse(ui.restore);if(!j||!Array.isArray(j.trips))throw 0;ui.rc=true}catch(x){toast('백업 내용이 올바르지 않습니다')}}
+ else if(a==='restore2'){try{var j2=JSON.parse(ui.restore);S=mergeBase(j2);for(var k in DEF){if(!S.lists||!S.lists[k])(S.lists=S.lists||{})[k]=DEF[k].slice()}S.set=S.set||{country:'KR',state:'45'};save();ui.rc=false;ui.restore='';ui.ex=null;ui.csv=null;toast('불러왔습니다')}catch(x){ui.rc=false;toast('불러오지 못했습니다')}}
+ else if(a==='delplace'){S.places=S.places.filter(function(p){return p.id!==id});S.trips.forEach(function(t){if(t.place===id)t.place=''});save()}
+ else if(a==='addplace'){var pf=ui.pf,la=pf.lat===''?null:parseFloat(pf.lat),lo=pf.lon===''?null:parseFloat(pf.lon);
+  if(!pf.name.trim()){toast('장소 이름을 적으세요');return render()}
+  if((la!=null&&(isNaN(la)||la<-90||la>90))||(lo!=null&&(isNaN(lo)||lo<-180||lo>180))||((la==null)!==(lo==null))){toast('위도와 경도를 숫자 두 개로 적으세요');return render()}
+  S.places.push({id:uid(),name:pf.name.trim(),lat:la,lon:lo});ui.pf={name:'',lat:'',lon:''};save();toast('장소를 추가했습니다')}
+ else if(a==='addsp'){var sf=ui.sf;if(!sf.ko.trim()){toast('한글 이름을 적으세요');return}var ex3=S.species.find(function(s){return s.ko===sf.ko.trim()});if(ex3){if(sf.en)ex3.en=sf.en.trim();if(sf.sci)ex3.sci=sf.sci.trim()}else S.species.push({ko:sf.ko.trim(),en:sf.en.trim(),sci:sf.sci.trim()});S.species.sort(function(x,y){return x.ko.localeCompare(y.ko)});ui.sf={ko:'',en:'',sci:''};save();toast('저장했습니다')}
+ else if(a==='imp'){
+  var up=0,add=0;
+  ui.imp.split(/\r?\n/).forEach(function(line){
+   if(!line.trim())return;var cols=(line.indexOf('\t')>=0?line.split('\t'):line.split(',')).map(function(c){return c.replace(/^["\s]+|["\s]+$/g,'')});
+   var ko=cols[0];if(!/[가-힣]/.test(ko||''))return;var en='',sci='';
+   cols.slice(1).forEach(function(c){if(!c)return;if(!sci&&/^[A-Z][a-z-]+ [a-z-]+( [a-z-]+)?$/.test(c))sci=c;else if(!en&&/^[A-Za-z][A-Za-z' .-]+$/.test(c))en=c});
+   var ex4=S.species.find(function(s){return s.ko===ko});
+   if(ex4){if(en)ex4.en=en;if(sci)ex4.sci=sci;up++}else{S.species.push({ko:ko,en:en,sci:sci});add++}});
+  S.species.sort(function(x,y){return x.ko.localeCompare(y.ko)});ui.imp='';save();toast('갱신 '+up+'종 · 추가 '+add+'종')}
+ else if(a==='lesave'){var arr2=(ui.leText==null?S.lists[ui.le].join('\n'):ui.leText).split('\n').map(function(x){return x.trim()}).filter(Boolean);if(!arr2.length){toast('선택지가 하나는 있어야 합니다');return}S.lists[ui.le]=arr2;ui.leText=null;save();toast('저장했습니다')}
+ else if(a==='lereset'){S.lists[ui.le]=DEF[ui.le].slice();ui.leText=null;save()}
+ render()});
+
+document.addEventListener('input',function(ev){
+ var el=ev.target;if(!el.getAttribute)return;var a=el.getAttribute('data-act');
+ if(a==='q'){ui.q=el.value;var r=document.getElementById('res');if(r)r.innerHTML=resHtml();return}
+ if(a==='cnt'){var n=parseInt(el.value,10);if(ui.sheet){ui.sheet.d.count=n>0?n:null;var cs=sheetEl.querySelectorAll('[data-f="count"]');cs.forEach(function(c){c.setAttribute('aria-pressed','false')})}return}
+ if(a==='inp'){var s=el.getAttribute('data-s'),f=el.getAttribute('data-f');
+  if(s==='ui'){ui[f]=el.value;ui.rc=false;return}
+  var o=target(s);if(!o)return;var val=el.value;if(f==='observers'){var nn=parseInt(val,10);val=nn>0?nn:''}else if(f==='km'){var kk=parseFloat(String(val).replace(',','.'));val=kk>0?kk:null}else if(f==='temp'){var tv=parseFloat(String(val).replace(',','.'));val=isNaN(tv)?'':tv}o[f]=val;afterSet(s);
+  if(s==='feat'&&f==='confuse'){var cf=document.getElementById('cfl');if(cf)cf.innerHTML=cfLink(el.value)}}});
+document.addEventListener('change',function(ev){
+ var el=ev.target,a=el.getAttribute&&el.getAttribute('data-act');
+ if(a==='ex'){ui.ex[el.getAttribute('data-id')]=el.checked;ui.csv=null;render()}
+ else if(a==='ldfile'){
+  var lf=el.files&&el.files[0];if(!lf)return;
+  var fr=new FileReader();
+  fr.onload=function(){try{var d=JSON.parse(fr.result);if(!d||!Array.isArray(d.trips))throw 0;ui.ld={src:lf.name,data:d}}catch(x){toast('백업 파일이 올바르지 않습니다')}render()};
+  fr.onerror=function(){toast('파일을 읽지 못했습니다')};
+  fr.readAsText(lf)}
+ else if(a==='photo'){
+  var file=el.files&&el.files[0];if(!file||!ui.sheet)return;
+  var ty=file.type||'',ext=/jpe?g/.test(ty)?'jpg':/png/.test(ty)?'png':/webp/.test(ty)?'webp':'',ko=ui.sheet.ko,done=function(f,msg){mediaAdd('photo',f);try{el.value=''}catch(x){}render();toast(msg)};
+  if(!ext){done('','이 사진 형식은 저장할 수 없어 시각만 기록했습니다. 휴대폰 사진 앱에서 확인하세요');return}
+  var name=fileStamp()+'_'+ko+'.'+ext;
+  saveFile(name,file).then(function(){done(name,'사진을 저장했습니다')}).catch(function(er){done('',er&&er.code==='declined'?'저장하지 않아 시각만 기록했습니다':'저장할 수 없어 시각만 기록했습니다')})}});
+render();
+ui.sv=nowStr();
+var autoSave=function(){persist();ui.sv=nowStr();var el=document.getElementById('sv');if(el)el.textContent='자동 저장 '+ui.sv};
+setInterval(autoSave,60000);
+document.addEventListener('visibilitychange',function(){if(document.hidden)persist()});
+window.addEventListener('pagehide',function(){persist()});
+idbGet(function(raw){
+ try{
+  var d=raw?JSON.parse(raw):null;
+  if(d&&Array.isArray(d.trips)){
+   var localEmpty=!S.trips.length&&!S.obs.length,hasData=d.trips.length||(d.obs&&d.obs.length);
+   if((localEmpty&&hasData)||(d.mt||0)>(S.mt||0)){S=mergeBase(d);ui.q='';ui.editNew=false;ui.draft=null;render();toast('저장된 기록을 불러왔습니다')}}
+ }catch(x){}
+ idbOK=true;persist()});
+})();
+</script>
+</body>
+</html>
