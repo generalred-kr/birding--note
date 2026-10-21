@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E6B5C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="탐조">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>탐조 기록장</title>
 <style>
 :root{--bg:#EEF1EA;--sf:#FFFFFF;--ink:#16231C;--mu:#58675E;--ln:#CFD7CC;--ac:#0E6B5C;--onac:#FFFFFF;--ac2:#DCEBE4;--wn:#963711;--wnbg:#FBEAE0;--hd:#EEF1EA;--sc:rgba(10,20,15,.45);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -77,7 +84,8 @@ header{position:static;flex:0 0 auto}
 main{flex:1 1 auto;min-height:0;overflow-y:auto;width:100%;max-width:640px;margin:0 auto;padding:12px 16px 16px;-webkit-overflow-scrolling:touch}
 nav{position:static;flex:0 0 auto}
 .srch{position:sticky;top:-12px;z-index:2;background:var(--bg);padding:12px 0 6px;margin-top:-12px}
-.sheet{height:88vh;max-height:88vh}
+.sheet{height:88vh;max-height:88vh;padding-bottom:0}
+.foot{position:sticky;bottom:0;z-index:4;background:var(--bg);padding:10px 0 calc(8px + env(safe-area-inset-bottom,0px));margin-top:12px;border-top:1px solid var(--ln)}
 :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
 </style>
@@ -104,10 +112,10 @@ var DEF={
  sound:['못 들음','짧게 반복','길게 지저귐','휘파람','쉰 소리','낮은 울음'],
  cond:['거리 멂','역광','매우 빠름','가려짐','짧은 시간','빛 부족'],
  wind:['없음','약함','보통','강함'],
- gear:['쌍안경','망원경','카메라','녹음기','삼각대'],
+ gear:['쌍안경','망원경','삼각대'],
  disturb:['사람 많음','소음','개 산책','공사','낚시','드론','차량','기타'],
  water:['해당 없음','만조','간조','밀물','썰물','수위 높음','수위 보통','수위 낮음','결빙'],
- purpose:['일반 탐조','철새 조사','번식 확인','사진 촬영','특정 종 찾기'],
+ purpose:['일반 탐조','철새 조사','번식 확인','특정 종 찾기'],
  transport:['도보','차량','자전거']
 };
 var LBL={habitat:'서식지',weather:'날씨',comp:'동행',behavior:'행동',size:'크기 비교',color:'색',beak:'부리',leg:'다리 색',pattern:'무늬',tail:'꼬리 모양',sound:'소리',cond:'관찰 조건',wind:'바람',gear:'장비',disturb:'방해 요인',water:'물 상태',purpose:'탐조 목적',transport:'이동 수단'};
@@ -160,6 +168,9 @@ function mergeBase(d){
  d.species=d.species.filter(function(x){return inBase[x.ko]||x.sci||x.en||used[x.ko]});
  d.species.sort(function(a,b){return a.ko.localeCompare(b.ko)});
  (d.trips||[]).forEach(function(t){if(typeof t.habitat==='string')t.habitat=t.habitat?[t.habitat]:[];['gear','disturb','habitat'].forEach(function(k){if(!Array.isArray(t[k]))t[k]=[]});if(t.temp==null)t.temp='';if(t.gps===undefined)t.gps=null});
+ if(d.lists){if(d.lists.gear)d.lists.gear=d.lists.gear.filter(function(x){return x!=='카메라'&&x!=='녹음기'});if(d.lists.purpose)d.lists.purpose=d.lists.purpose.filter(function(x){return x!=='사진 촬영'})}
+ (d.trips||[]).forEach(function(t){if(t.gear)t.gear=t.gear.filter(function(x){return x!=='카메라'&&x!=='녹음기'});if(t.purpose==='사진 촬영')t.purpose=''});
+ (d.obs||[]).forEach(function(o){delete o.media});
  return d}
 var INI='ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'.split('');
 
@@ -173,8 +184,6 @@ var e=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){ret
 var CH='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
 var cho=function(s){return Array.from(s).map(function(c){var n=c.charCodeAt(0)-0xAC00;return n>=0&&n<11172?CH[Math.floor(n/588)]:c}).join('')};
 
-var nowSec=function(){var d=new Date();return nowStr()+':'+pad(d.getSeconds())};
-var fileStamp=function(){var d=new Date();return todayStr().replace(/-/g,'')+'_'+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())};
 var iniOf=function(ko){var c=cho(ko)[0];return {'ㄲ':'ㄱ','ㄸ':'ㄷ','ㅃ':'ㅂ','ㅆ':'ㅅ','ㅉ':'ㅈ'}[c]||c};
 var ebUrl=function(sp){return sp&&sp.code?'https://ebird.org/species/'+encodeURIComponent(sp.code):''};
 var LNK='display:block;text-align:center;text-decoration:none;color:inherit;line-height:30px';
@@ -204,7 +213,7 @@ function save(){S.mt=Date.now();persist()}
 persist();
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(x){}
 
-var ui={tab:'trip',q:'',sheet:null,editNew:false,draft:null,ex:null,lvl:'sure',csv:null,pf:{name:'',lat:'',lon:''},sf:{ko:'',en:'',sci:''},imp:'',le:'habitat',leText:null,restore:'',delTrip:null,toast:'',more:{},rec:null};
+var ui={tab:'trip',q:'',sheet:null,editNew:false,draft:null,ex:null,lvl:'sure',csv:null,pf:{name:'',lat:'',lon:''},sf:{ko:'',en:'',sci:''},imp:'',le:'habitat',leText:null,restore:'',delTrip:null,toast:'',more:{}};
 var app=document.getElementById('app'),sheetEl=document.getElementById('sheet'),toastEl=document.getElementById('toast');
 
 function curTrip(){return S.trips.find(function(t){return t.id===S.sel})||null}
@@ -313,14 +322,12 @@ function resHtml(){
  return h}
 function firstMap(){var m={};S.obs.forEach(function(o){if(m[o.ko]==null||(o.at||0)<m[o.ko])m[o.ko]=o.at||0});return m}
 function obsTags(o,fm){
- var h='',md=o.media||[],ph=md.filter(function(x){return x.k==='photo'}).length,au=md.length-ph;
+ var h='';
  if(fm[o.ko]===(o.at||0))h+='<span class="tag">처음</span>';
  if(o.heard)h+='<span class="tag">소리만</span>';
  if(o.cert!=='확실')h+='<span class="tag w">'+e(o.cert)+'</span>';
  if(o.check)h+='<span class="tag w">확인 필요</span>';
  if(o.rare)h+='<span class="tag">희귀</span>';
- if(ph)h+='<span class="tag">사진 '+ph+'</span>';
- if(au)h+='<span class="tag">녹음 '+au+'</span>';
  return h}
 function viewRec(){
  var t=curTrip();
@@ -330,28 +337,8 @@ function viewRec(){
  h+='<h2>이번 탐조 기록 ('+l.length+'종)</h2>';
  if(!l.length)h+='<div class="mu">아직 기록이 없습니다. 위에서 종을 누르세요.</div>';
  l.forEach(function(o){h+='<button type="button" class="li" data-act="pick" data-ko="'+e(o.ko)+'"><span><span class="a">'+e(o.ko)+'</span>'+obsTags(o,fm)+'</span><span class="z">'+e(o.count)+(o.count==='X'?'':'마리')+' · '+e(o.time||'')+'</span></button>'});
- return h}
-function mediaAdd(k,f){var d=ui.sheet&&ui.sheet.d;if(!d)return;(d.media=d.media||[]).push({k:k,t:nowSec(),f:f||''})}
-function stopRec(discard){if(ui.rec&&ui.rec.mr&&ui.rec.mr.state!=='inactive'){ui.rec.discard=!!discard;try{ui.rec.mr.stop()}catch(x){}}}
-function startRec(){
- if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder)){toast('이 화면에서는 앱 안 녹음을 쓸 수 없습니다. 휴대폰 녹음 앱을 쓰고 ‘녹음함 표시’를 누르세요');return}
- var d=ui.sheet.d,ko=ui.sheet.ko;d.media=d.media||[];
- navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-  var mr=new MediaRecorder(stream),chunks=[];ui.rec={mr:mr,d:d,ko:ko,discard:false};
-  mr.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data)};
-  mr.onstop=function(){
-   stream.getTracks().forEach(function(x){x.stop()});var rc=ui.rec;ui.rec=null;
-   if(!rc||rc.discard||!chunks.length){render();return}
-   var ty=mr.mimeType||'',ext=/mp4|aac/.test(ty)?'mp4':'webm',name=fileStamp()+'_'+rc.ko+'_녹음.'+ext,blob=new Blob(chunks,{type:ty});
-   var add=function(f){rc.d.media.push({k:'audio',t:nowSec(),f:f});save();render()};
-   saveFile(name,blob).then(function(){add(name);toast('녹음을 저장했습니다')}).catch(function(){add('');toast('저장하지 않아 시각만 기록했습니다')})};
-  mr.start();render();
- }).catch(function(){toast('마이크를 쓸 수 없습니다. 휴대폰 녹음 앱을 쓰고 ‘녹음함 표시’를 누르세요')})}
-function mediaHtml(d){
- var m=d.media||[],h='<div class="lab">사진·녹음</div><div class="mu" style="margin-bottom:6px">휴대폰 카메라나 녹음 앱으로 찍은 뒤, 아래 버튼으로 찍은 시각을 남기세요. 내보내기 탭의 시각표로 휴대폰의 사진과 녹음을 시각으로 찾아 맞출 수 있습니다.</div>';
- h+='<div class="btns" style="margin-top:8px"><button type="button" class="chip half" data-act="mark" data-v="photo">사진 찍음 표시</button><button type="button" class="chip half" data-act="mark" data-v="audio">녹음함 표시</button></div>';
- m.forEach(function(x,i){h+='<div class="li" style="cursor:default;min-height:44px;margin:6px 0 0"><span>'+(x.k==='photo'?'사진':'녹음')+' '+e(x.t)+'<div class="mu">'+(x.f?e(x.f):'시각만 기록')+'</div></span><button type="button" class="chip sm" data-act="delmedia" data-v="'+i+'">삭제</button></div>'});
- return h}
+ var ft=t.end?'<span class="mu">종료됨 '+e(t.end)+'</span><button type="button" class="chip sm" data-act="reopen">종료 취소</button>':'<button type="button" class="btn pri" style="margin-top:0" data-act="endnow">탐조 종료</button>';
+ return '<div style="display:flex;flex-direction:column;min-height:100%"><div>'+h+'</div><div class="foot" style="margin-top:auto;padding-bottom:8px;'+(t.end?'display:flex;align-items:center;justify-content:space-between;gap:10px':'')+'">'+ft+'</div></div>'}
 function obsSheet(){
  var s=ui.sheet,d=s.d,sp=spOf(s.ko);
  var h='<div class="row"><h3>'+e(s.ko)+'</h3><span class="mu">'+e(sp.en||'')+'</span></div>'+spInfo(sp);
@@ -359,11 +346,10 @@ function obsSheet(){
  h+='<div class="lab">행동</div>'+chips(S.lists.behavior,d.beh,'obs','beh',true);
  h+='<div class="lab">확실도</div>'+chips(CERT,d.cert,'obs','cert',false);
  h+='<div class="chips" style="margin-top:12px"><button type="button" class="chip" aria-pressed="'+!!d.heard+'" data-act="flag" data-f="heard">소리만 들음</button><button type="button" class="chip" aria-pressed="'+!!d.check+'" data-act="flag" data-f="check">확인 필요</button></div>';
- h+=moreBox('obs','희귀 표시 · 메모 · 사진·녹음','<div class="chips"><button type="button" class="chip" aria-pressed="'+!!d.rare+'" data-act="flag" data-f="rare">희귀종</button></div><div class="lab">메모</div><input type="text" value="'+e(d.note)+'" data-act="inp" data-s="obs" data-f="note" aria-label="메모" autocomplete="off">'+mediaHtml(d));
+ h+=moreBox('obs','희귀 표시 · 메모','<div class="chips"><button type="button" class="chip" aria-pressed="'+!!d.rare+'" data-act="flag" data-f="rare">희귀종</button></div><div class="lab">메모</div><input type="text" value="'+e(d.note)+'" data-act="inp" data-s="obs" data-f="note" aria-label="메모" autocomplete="off">');
  if(s.err)h+='<div class="warn" role="alert">'+e(s.err)+'</div>';
- h+='<button type="button" class="btn pri" data-act="saveobs">저장</button><div class="btns"><button type="button" class="btn half" data-act="close">닫기</button>';
- if(s.id)h+='<button type="button" class="btn dng half" data-act="'+(s.cd?'delobs2':'delobs')+'">'+(s.cd?'정말 삭제':'삭제')+'</button>';
- return h+'</div>'}
+ h+='<div class="foot"><button type="button" class="btn pri" style="margin-top:0" data-act="saveobs">저장</button><div class="btns"><button type="button" class="btn half" data-act="close">닫기</button>'+(s.id?'<button type="button" class="btn dng half" data-act="'+(s.cd?'delobs2':'delobs')+'">'+(s.cd?'정말 삭제':'삭제')+'</button>':'')+'</div></div>';
+ return h}
 
 /* ---------- features tab ---------- */
 function featOf(id){return S.feats.find(function(x){return x.obs===id})}
@@ -391,7 +377,7 @@ function featSheet(){
   FG.forEach(function(g){h+='<div class="lab">'+g[1]+'</div>'+chips(S.lists[g[2]],d[g[0]],'feat',g[0],true)});
   h+='<div class="lab">헷갈린 종</div><input type="text" list="splist" value="'+e(d.confuse)+'" data-act="inp" data-s="feat" data-f="confuse" aria-label="헷갈린 종" autocomplete="off"><div id="cfl">'+cfLink(d.confuse)+'</div><datalist id="splist">'+S.species.map(function(x){return '<option value="'+e(x.ko)+'">'}).join('')+'</datalist>';
   h+='<div class="lab">메모</div><input type="text" value="'+e(d.note)+'" data-act="inp" data-s="feat" data-f="note" aria-label="메모" autocomplete="off">'}
- return h+'<button type="button" class="btn pri" data-act="savefeat">저장</button><button type="button" class="btn" data-act="close">닫기</button>'}
+ return h+'<div class="foot"><button type="button" class="btn pri" style="margin-top:0" data-act="savefeat">저장</button><div class="btns"><button type="button" class="btn half" data-act="close">닫기</button></div></div>'}
 
 /* ---------- export ---------- */
 function ebDate(s){var p=s.split('-');return p[1]+'/'+p[2]+'/'+p[0]}
@@ -416,8 +402,7 @@ function buildCsv(ids,lvl){
   list.forEach(function(o){
    var sp=spOf(o.ko),sc=(sp.sci||'').split(' ');
    if(!sp.en&&!sp.sci)warn.push(tag+': '+o.ko+'의 영문명·학명이 없어서 가져온 뒤 종을 직접 골라야 합니다.');
-   var md=o.media||[],phn=md.filter(function(x){return x.k==='photo'}).length,aun=md.length-phn;
-    var cmt=san([o.beh.join('/'),o.heard?'소리만 들음':'',o.cert==='추정'?'추정':'',o.check?'확인 필요':'',o.rare?'희귀':'',phn?'사진 '+phn:'',aun?'녹음 '+aun:'',o.note].filter(Boolean).join('; '));
+   var cmt=san([o.beh.join('/'),o.heard?'소리만 들음':'',o.cert==='추정'?'추정':'',o.check?'확인 필요':'',o.rare?'희귀':'',o.note].filter(Boolean).join('; '));
    rows.push([san(sp.en||(!sp.sci?o.ko:'')),sp.en?'':(sc[0]||''),sp.en?'':(sc[1]||''),o.count,cmt,san(pl?pl.name:''),la,lo,ebDate(t.date),t.start||'',S.set.state||'',S.set.country||'',t.protocol,t.observers||1,dur==null||t.protocol==='Incidental'?'':dur,t.protocol==='Incidental'?'N':(t.all?'Y':'N'),t.protocol==='Traveling'&&t.km?(t.km*0.621371).toFixed(2):'','',cm].join(','));
   });
  });
@@ -430,7 +415,7 @@ function viewExp(){
  S.trips.slice().sort(function(a,b){return (b.date+b.start).localeCompare(a.date+a.start)}).forEach(function(t){
   h+='<label class="li" style="cursor:pointer"><span><input type="checkbox" style="width:22px;height:22px;vertical-align:middle;margin-right:10px" data-act="ex" data-id="'+t.id+'"'+(ui.ex[t.id]?' checked':'')+'><span class="a">'+e(tripLabel(t))+'</span>'+(t.exp?'<span class="tag">내보냄 '+e(t.exp.slice(5))+'</span>':'')+'</span><span class="z">'+e(sumOf(t))+'</span></label>'});
  h+='<div class="lab" style="margin-top:14px">올릴 확실도</div>'+chips([['sure','확실만'],['est','확실 + 추정'],['all','전부']],ui.lvl,'ui','lvl',false);
- h+='<button type="button" class="btn pri" data-act="mkcsv">CSV 만들기</button><button type="button" class="btn" data-act="mlog">사진·녹음 시각표 저장 (CSV)</button><div class="mu" style="margin-top:6px">시각표는 사진과 녹음을 남긴 시각과 종, 장소를 적은 표입니다. 휴대폰에 있는 사진과 녹음을 시각으로 찾아 맞출 때 씁니다.</div>';
+ h+='<button type="button" class="btn pri" data-act="mkcsv">CSV 만들기</button>';
  if(ui.csv){
   var c=ui.csv;
   h+=c.warn.length?'<div class="warn"><b>확인할 점 '+c.warn.length+'건</b><ul>'+c.warn.map(function(w){return '<li>'+e(w)+'</li>'}).join('')+'</ul></div>':'<div class="ok">확인할 점이 없습니다.</div>';
@@ -440,7 +425,7 @@ function viewExp(){
    h+='<div class="mu" style="margin-top:8px">저장하거나 복사하면 선택한 탐조에 ‘내보냄’ 표시가 붙습니다. 처음 한 번은 열 순서가 eBird 도움말의 레코드 형식 견본과 같은지 비교해 보세요.</div>';
   }
  }
- h+='<h2>올리는 방법</h2><div class="card mu">eBird 사이트에서 제출 → 데이터 가져오기 → 레코드 형식을 고르고 이 CSV를 올립니다. 사진과 녹음은 가져온 뒤 각 체크리스트에서 따로 올려야 합니다. 종 이름이 맞지 않으면 가져온 뒤 ‘종 고치기’ 단계에서 고릅니다.</div>';
+ h+='<h2>올리는 방법</h2><div class="card mu">eBird 사이트에서 제출 → 데이터 가져오기 → 레코드 형식을 고르고 이 CSV를 올립니다. 종 이름이 맞지 않으면 가져온 뒤 ‘종 고치기’ 단계에서 고릅니다.</div>';
  h+='<h2>백업</h2><div class="mu" style="margin-bottom:6px">기록은 이 기기의 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 백업하세요.'+(S.backup?' 마지막 백업 '+e(S.backup):' 아직 백업하지 않았습니다.')+'</div>';
  h+='<button type="button" class="btn" data-act="bak">백업 파일 저장</button>';
  h+='<h2>불러오기</h2><div class="mu" style="margin-bottom:6px">집에서 편집할 때 쓰세요. 합치기는 지금 기록을 그대로 두고 없는 탐조와 기록만 더하고, 바꾸기는 지금 기록을 지우고 불러온 기록으로 바꿉니다. 같은 탐조가 양쪽에 있으면 지금 기록을 남깁니다.</div>';
@@ -460,7 +445,7 @@ function viewSet(){
  h+='<div class="lab">붙여넣어서 불러오기</div><div class="mu" style="margin-bottom:6px">한글 이름, 학명, 영문명 순서로(탭이나 쉼표로 구분) 한 줄에 한 종씩 붙여넣으세요. 한글 이름이 같은 종은 학명과 영문명을 바꾸고, 없는 종은 새로 추가합니다.</div><textarea data-act="inp" data-s="ui" data-f="imp" aria-label="종 목록 붙여넣기">'+e(ui.imp)+'</textarea><button type="button" class="btn pri" data-act="imp">불러오기</button></div>';
  h+='<div class="card"><div class="lab">종 하나 추가</div><input type="text" placeholder="한글 이름" value="'+e(ui.sf.ko)+'" data-act="inp" data-s="sf" data-f="ko" aria-label="한글 이름" autocomplete="off"><input type="text" placeholder="영문명 (선택)" style="margin-top:8px" value="'+e(ui.sf.en)+'" data-act="inp" data-s="sf" data-f="en" aria-label="영문명" autocomplete="off"><input type="text" placeholder="학명 (선택)" style="margin-top:8px" value="'+e(ui.sf.sci)+'" data-act="inp" data-s="sf" data-f="sci" aria-label="학명" autocomplete="off"><button type="button" class="btn" data-act="addsp">추가</button></div>';
  h+='<h2>선택지 편집</h2><div class="card">'+chips(Object.keys(LBL).filter(function(k){return k!=='color'&&k!=='leg'&&k!=='pattern'&&k!=='comp'}).map(function(k){return [k,LBL[k]]}),ui.le,'ui','le',false)+'<div class="lab" style="margin-top:12px">한 줄에 하나씩 적습니다</div><textarea data-act="inp" data-s="ui" data-f="leText" aria-label="선택지">'+e(ui.leText==null?S.lists[ui.le].join('\n'):ui.leText)+'</textarea><div class="btns"><button type="button" class="btn half" data-act="lereset">기본값으로</button><button type="button" class="btn pri half" data-act="lesave">저장</button></div></div>';
- h+='<h2>신호가 없을 때</h2><div class="card mu">이 화면을 신호가 있는 곳에서 한 번 열어 두면, 이후 입력한 기록은 기기에 저장됩니다. 신호가 없는 곳에서 화면을 처음 여는 것이나 새로 고침은 되지 않을 수 있으니, 출발 전에 비행기 모드로 시험해 보세요.</div>';
+ h+='<h2>신호가 없을 때</h2><div class="card mu">처음 한 번은 인터넷이 연결된 곳에서 열어 두세요. 브라우저가 오프라인 저장을 지원하면, 홈 화면에 추가해 둔 뒤에는 신호가 없어도 열립니다. 입력한 기록은 기기에 저장됩니다. 출발 전에 비행기 모드로 열어 보며 확인하세요.</div>';
  return h}
 
 /* ---------- render ---------- */
@@ -492,13 +477,21 @@ function render(){
 /* ---------- actions ---------- */
 function openObs(ko){
  var t=curTrip(),ex=tripObs(t.id).find(function(o){return o.ko===ko});
- ui.sheet={type:'obs',ko:ko,id:ex?ex.id:null,d:ex?{count:ex.count,beh:ex.beh.slice(),cert:ex.cert,note:ex.note||'',heard:!!ex.heard,check:!!ex.check,rare:!!ex.rare,media:(ex.media||[]).slice()}:{count:null,beh:[],cert:'확실',note:'',heard:false,check:false,rare:false,media:[]},err:'',fresh:true}}
+ ui.sheet={type:'obs',ko:ko,id:ex?ex.id:null,d:ex?{count:ex.count,beh:ex.beh.slice(),cert:ex.cert,note:ex.note||'',heard:!!ex.heard,check:!!ex.check,rare:!!ex.rare}:{count:null,beh:[],cert:'확실',note:'',heard:false,check:false,rare:false},err:'',fresh:true}}
 function copyText(txt){
  return (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).catch(function(){
   var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(x){}document.body.removeChild(ta);if(!ok)throw new Error('copy')})}
 function saveFile(name,data){
- if(!(window.claude&&window.claude.use))return Promise.reject(new Error('unavailable'));
- return window.claude.use('downloads').then(function(d){if(!d)throw new Error('unavailable');return d.save({filename:name,data:data})})}
+ if(window.claude&&window.claude.use)return window.claude.use('downloads').then(function(d){if(!d)throw new Error('unavailable');return d.save({filename:name,data:data})});
+ return new Promise(function(res,rej){
+  try{
+   var ext=(name.split('.').pop()||'').toLowerCase(),types={csv:'text/csv;charset=utf-8',json:'application/json'};
+   var blob=data instanceof Blob?data:new Blob([data],{type:types[ext]||'text/plain;charset=utf-8'});
+   var url=URL.createObjectURL(blob),a=document.createElement('a');
+   a.href=url;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();
+   setTimeout(function(){try{document.body.removeChild(a);URL.revokeObjectURL(url)}catch(x){}},1500);
+   res({status:'saved'})}
+  catch(x){rej(x)}})}
 function markExported(ids){var d=todayStr();ids.forEach(function(id){var t=S.trips.find(function(x){return x.id===id});if(t)t.exp=d});save()}
 var fmtDT=function(ms){var d=new Date(ms);return pad(d.getMonth()+1)+'/'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
 function ldInfo(d){return (d.mt?fmtDT(d.mt)+' 저장 · ':'')+'탐조 '+(d.trips||[]).length+'개 · 종 기록 '+(d.obs||[]).length+'개 · 특징 '+(d.feats||[]).length+'개'}
@@ -518,18 +511,18 @@ function selIds(){return Object.keys(ui.ex||{}).filter(function(k){return ui.ex[
 function autoBackup(){
  var snap=JSON.stringify(S),mt=S.mt,name='birdlog-backup-'+todayStr().replace(/-/g,'')+'-'+nowStr().replace(':','')+'.json';
  function done(msg){S.backup=todayStr();S.bk=mt||Date.now();persist();render();toast(msg)}
- saveFile(name,snap).then(function(){done('백업을 휴대폰에 저장했습니다')}).catch(function(er){
+ saveFile(name,snap).then(function(){done('백업 파일을 저장했습니다')}).catch(function(er){
   if(er&&er.code==='declined'){toast('백업을 건너뛰었습니다. 위의 지금 백업 버튼으로 다시 저장할 수 있습니다');return}
   copyText(snap).then(function(){done('파일 저장이 안 되어 내용을 복사했습니다. 메모 앱에 붙여넣어 보관하세요')}).catch(function(){toast('백업할 수 없습니다')})})}
 
 document.addEventListener('click',function(ev){
  var el=ev.target.closest('[data-act]');if(!el)return;
  var a=el.getAttribute('data-act');
- if(a==='scrim'){if(ev.target!==el)return;stopRec(true);ui.sheet=null;render();return}
+ if(a==='scrim'){if(ev.target!==el)return;ui.sheet=null;render();return}
  if(a==='palscrim'){if(ev.target!==el)return;ui.sheet.pal=null;render();return}
- if(a==='q'||a==='inp'||a==='cnt'||a==='ex'||a==='photo'||a==='ldfile')return;
+ if(a==='q'||a==='inp'||a==='cnt'||a==='ex'||a==='ldfile')return;
  var id=el.getAttribute('data-id'),v=el.getAttribute('data-v');
- if(a==='tab'){stopRec(true);ui.tab=v;ui.sheet=null;ui.resetScroll=true}
+ if(a==='tab'){ui.tab=v;ui.sheet=null;ui.resetScroll=true}
  else if(a==='chip'){
   var s=el.getAttribute('data-s'),f=el.getAttribute('data-f'),m=el.getAttribute('data-m')==='1',n=el.getAttribute('data-n')==='1';
   if(s==='ui'){ui[f]=(f==='ini'&&ui.ini===v)?'':v;if(f==='le')ui.leText=null;if(f==='lvl')ui.csv=null}
@@ -548,13 +541,14 @@ document.addEventListener('click',function(ev){
  else if(a==='cancelnew'){ui.editNew=false;ui.draft=null;if(!S.sel&&S.trips.length)S.sel=S.trips[S.trips.length-1].id}
  else if(a==='newtrip'){ui.editNew=true;ui.draft=newDraft()}
  else if(a==='open'){S.sel=id;ui.editNew=false;ui.draft=null;ui.delTrip=null;save()}
- else if(a==='endnow'){var t=curTrip();if(t){var first=!t.end;t.end=nowStr();save();toast('종료 시각 '+t.end);if(first)autoBackup()}}
+ else if(a==='endnow'){var t=curTrip();if(t){var first=!t.end;t.end=nowStr();save();toast(first?'탐조를 종료했습니다 ('+t.end+')':'종료 시각 '+t.end);if(first)autoBackup()}}
+ else if(a==='reopen'){var rt=curTrip();if(rt){rt.end='';save();toast('종료를 취소했습니다')}}
  else if(a==='rec'){ui.tab='rec'}
  else if(a==='deltrip'){ui.delTrip=S.sel}
  else if(a==='deltrip2'){var tid=S.sel;S.trips=S.trips.filter(function(t){return t.id!==tid});var ids=S.obs.filter(function(o){return o.trip===tid}).map(function(o){return o.id});S.obs=S.obs.filter(function(o){return o.trip!==tid});S.feats=S.feats.filter(function(x){return ids.indexOf(x.obs)<0});S.sel=S.trips.length?S.trips[S.trips.length-1].id:null;ui.delTrip=null;ui.ex=null;save();toast('지웠습니다')}
  else if(a==='pick'){openObs(el.getAttribute('data-ko'))}
  else if(a==='newsp'){var ko=el.getAttribute('data-ko');if(!S.species.some(function(s){return s.ko===ko})){S.species.push({ko:ko,en:'',sci:''});S.species.sort(function(x,y){return x.ko.localeCompare(y.ko)});save()}ui.q='';openObs(ko)}
- else if(a==='close'){stopRec(true);ui.sheet=null}
+ else if(a==='close'){ui.sheet=null}
  else if(a==='addcomp'){var cn=(ui.cn||'').trim();if(!cn){toast('동행 이름을 적으세요')}else{var ct=target('trip');if(ct)ct.comp=cn;ui.cn='';save();toast('동행을 선택했습니다')}}
  else if(a==='addplace2'){var pn=(ui.pn||'').trim();if(!pn){toast('장소 이름을 적으세요')}else{var ep2=S.places.find(function(q){return q.name===pn});if(!ep2){ep2={id:uid(),name:pn,lat:null,lon:null};S.places.push(ep2)}var pt=target('trip');if(pt){pt.place=ep2.id}ui.pn='';save();toast('장소를 선택했습니다')}}
  else if(a==='ldauto'){idbGet(function(raw){var d;try{d=raw?JSON.parse(raw):null}catch(x){d=null}if(!d||!Array.isArray(d.trips)){toast('자동 저장본이 없습니다');return}ui.ld={src:'자동 저장본',data:d};render()});return}
@@ -563,15 +557,6 @@ document.addEventListener('click',function(ev){
  else if(a==='ldcancel'){ui.ld=null}
  else if(a==='more'){ui.more[v]=!ui.more[v]}
  else if(a==='flag'){var fk=el.getAttribute('data-f');ui.sheet.d[fk]=!ui.sheet.d[fk]}
- else if(a==='mark'){mediaAdd(v,'')}
- else if(a==='delmedia'){ui.sheet.d.media.splice(+v,1)}
- else if(a==='arec'){if(ui.rec)stopRec(false);else startRec();return}
- else if(a==='mlog'){
-  var ids4=selIds();if(!ids4.length){toast('탐조를 하나 이상 고르세요');return render()}
-  var rows2=['날짜,시각,종,종류,파일명,장소'];
-  ids4.forEach(function(id4){var t4=S.trips.find(function(x){return x.id===id4});if(!t4)return;tripObs(id4).forEach(function(o4){(o4.media||[]).forEach(function(m4){rows2.push([t4.date,m4.t,o4.ko,m4.k==='photo'?'사진':'녹음',m4.f||'',placeName(t4)].map(san).join(','))})})});
-  if(rows2.length<2){toast('선택한 탐조에 사진·녹음 기록이 없습니다');return render()}
-  saveFile('media_log_'+todayStr().replace(/-/g,'')+'.csv','\ufeff'+rows2.join('\n')).then(function(){toast('시각표를 저장했습니다')}).catch(function(er){toast(er&&er.code==='declined'?'저장을 취소했습니다':'저장할 수 없습니다')});return}
  else if(a==='part'){ui.sheet.pal=v;ui.sheet.ft=isPat(v)?'pat':'color'}
 
 
@@ -584,13 +569,12 @@ document.addEventListener('click',function(ev){
  else if(a==='palclear'){if(ui.sheet.pal)ui.sheet.d[ui.sheet.pal]=[]}
  else if(a==='palclose'){ui.sheet.pal=null}
  else if(a==='saveobs'){
-  var sh=ui.sheet,dd=sh.d,t2=curTrip();stopRec(false);
+  var sh=ui.sheet,dd=sh.d,t2=curTrip();
   if(dd.count==null||dd.count===''||(typeof dd.count==='number'&&!(dd.count>0))){sh.err='개체수를 입력하세요. 수를 못 셌으면 X를 누르세요.'}
   else{
    var rec=sh.id&&S.obs.find(function(o){return o.id===sh.id});
-   dd.media=dd.media||[];
-   if(rec){rec.count=dd.count;rec.beh=dd.beh;rec.cert=dd.cert;rec.note=dd.note;rec.heard=dd.heard;rec.check=dd.check;rec.rare=dd.rare;rec.media=dd.media}
-   else S.obs.push({id:uid(),trip:t2.id,ko:sh.ko,count:dd.count,beh:dd.beh,cert:dd.cert,note:dd.note,heard:dd.heard,check:dd.check,rare:dd.rare,media:dd.media,time:nowStr(),at:Date.now()});
+   if(rec){rec.count=dd.count;rec.beh=dd.beh;rec.cert=dd.cert;rec.note=dd.note;rec.heard=dd.heard;rec.check=dd.check;rec.rare=dd.rare}
+   else S.obs.push({id:uid(),trip:t2.id,ko:sh.ko,count:dd.count,beh:dd.beh,cert:dd.cert,note:dd.note,heard:dd.heard,check:dd.check,rare:dd.rare,time:nowStr(),at:Date.now()});
    save();ui.sheet=null;ui.q='';toast(sh.ko+' 저장')}
  }
  else if(a==='delobs'){ui.sheet.cd=true}
@@ -643,14 +627,9 @@ document.addEventListener('change',function(ev){
   var fr=new FileReader();
   fr.onload=function(){try{var d=JSON.parse(fr.result);if(!d||!Array.isArray(d.trips))throw 0;ui.ld={src:lf.name,data:d}}catch(x){toast('백업 파일이 올바르지 않습니다')}render()};
   fr.onerror=function(){toast('파일을 읽지 못했습니다')};
-  fr.readAsText(lf)}
- else if(a==='photo'){
-  var file=el.files&&el.files[0];if(!file||!ui.sheet)return;
-  var ty=file.type||'',ext=/jpe?g/.test(ty)?'jpg':/png/.test(ty)?'png':/webp/.test(ty)?'webp':'',ko=ui.sheet.ko,done=function(f,msg){mediaAdd('photo',f);try{el.value=''}catch(x){}render();toast(msg)};
-  if(!ext){done('','이 사진 형식은 저장할 수 없어 시각만 기록했습니다. 휴대폰 사진 앱에서 확인하세요');return}
-  var name=fileStamp()+'_'+ko+'.'+ext;
-  saveFile(name,file).then(function(){done(name,'사진을 저장했습니다')}).catch(function(er){done('',er&&er.code==='declined'?'저장하지 않아 시각만 기록했습니다':'저장할 수 없어 시각만 기록했습니다')})}});
+  fr.readAsText(lf)}});
 render();
+try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){})}catch(x){}
 ui.sv=nowStr();
 var autoSave=function(){persist();ui.sv=nowStr();var el=document.getElementById('sv');if(el)el.textContent='자동 저장 '+ui.sv};
 setInterval(autoSave,60000);

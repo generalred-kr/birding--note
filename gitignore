@@ -1,0 +1,3 @@
+# 탐조 기록이 들어 있는 파일은 올리지 않습니다
+birdlog-backup*.json
+ebird_*.csv
