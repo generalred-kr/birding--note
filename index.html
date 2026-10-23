@@ -403,7 +403,7 @@ function buildCsv(ids,lvl){
    var sp=spOf(o.ko),sc=(sp.sci||'').split(' ');
    if(!sp.en&&!sp.sci)warn.push(tag+': '+o.ko+'의 영문명·학명이 없어서 가져온 뒤 종을 직접 골라야 합니다.');
    var cmt=san([o.beh.join('/'),o.heard?'소리만 들음':'',o.cert==='추정'?'추정':'',o.check?'확인 필요':'',o.rare?'희귀':'',o.note].filter(Boolean).join('; '));
-   rows.push([san(sp.en||(!sp.sci?o.ko:'')),sp.en?'':(sc[0]||''),sp.en?'':(sc[1]||''),o.count,cmt,san(pl?pl.name:''),la,lo,ebDate(t.date),t.start||'',S.set.state||'',S.set.country||'',t.protocol,t.observers||1,dur==null||t.protocol==='Incidental'?'':dur,t.protocol==='Incidental'?'N':(t.all?'Y':'N'),t.protocol==='Traveling'&&t.km?(t.km*0.621371).toFixed(2):'','',cm].join(','));
+   rows.push([san((sp.en||(!sp.sci?o.ko:''))),(ui.nm||'en')==='en'&&sp.en?'':(sc[0]||''),(ui.nm||'en')==='en'&&sp.en?'':(sc[1]||''),o.count,cmt,san(pl?pl.name:''),la,lo,ebDate(t.date),t.start||'',S.set.state||'',S.set.country||'',t.protocol,t.observers||1,dur==null||t.protocol==='Incidental'?'':dur,t.protocol==='Incidental'?'N':(t.all?'Y':'N'),t.protocol==='Traveling'&&t.km?(t.km*0.621371).toFixed(2):'','',cm].join(','));
   });
  });
  var seen={};warn=warn.filter(function(w){if(seen[w])return false;seen[w]=1;return true});
@@ -415,6 +415,7 @@ function viewExp(){
  S.trips.slice().sort(function(a,b){return (b.date+b.start).localeCompare(a.date+a.start)}).forEach(function(t){
   h+='<label class="li" style="cursor:pointer"><span><input type="checkbox" style="width:22px;height:22px;vertical-align:middle;margin-right:10px" data-act="ex" data-id="'+t.id+'"'+(ui.ex[t.id]?' checked':'')+'><span class="a">'+e(tripLabel(t))+'</span>'+(t.exp?'<span class="tag">내보냄 '+e(t.exp.slice(5))+'</span>':'')+'</span><span class="z">'+e(sumOf(t))+'</span></label>'});
  h+='<div class="lab" style="margin-top:14px">올릴 확실도</div>'+chips([['sure','확실만'],['est','확실 + 추정'],['all','전부']],ui.lvl,'ui','lvl',false);
+ h+='<div class="lab" style="margin-top:14px">종 이름 표기</div>'+chips([['en','영문명만'],['both','영문명 + 학명']],ui.nm||'en','ui','nm',false)+'<div class="mu" style="margin-top:6px">영문명만 올려서 종이 안 맞으면 학명도 같이 넣어 보세요. 영문명 칸은 비우지 않습니다.</div>';
  h+='<button type="button" class="btn pri" data-act="mkcsv">CSV 만들기</button>';
  if(ui.csv){
   var c=ui.csv;
@@ -525,7 +526,7 @@ document.addEventListener('click',function(ev){
  if(a==='tab'){ui.tab=v;ui.sheet=null;ui.resetScroll=true}
  else if(a==='chip'){
   var s=el.getAttribute('data-s'),f=el.getAttribute('data-f'),m=el.getAttribute('data-m')==='1',n=el.getAttribute('data-n')==='1';
-  if(s==='ui'){ui[f]=(f==='ini'&&ui.ini===v)?'':v;if(f==='le')ui.leText=null;if(f==='lvl')ui.csv=null}
+  if(s==='ui'){ui[f]=(f==='ini'&&ui.ini===v)?'':v;if(f==='le')ui.leText=null;if(f==='lvl'||f==='nm')ui.csv=null}
   else{
    var o=target(s);if(!o)return;
    if(m){var arr=o[f]=o[f]||[],i=arr.indexOf(v);if(i>=0)arr.splice(i,1);else arr.push(v)}
